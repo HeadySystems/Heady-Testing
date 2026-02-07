@@ -1,3 +1,19 @@
+<# HEADY_BRAND:BEGIN
+<# ╔══════════════════════════════════════════════════════════════════╗
+<# ║  ██╗  ██╗███████╗ █████╗ ██████╗ ██╗   ██╗                     ║
+<# ║  ██║  ██║██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝                     ║
+<# ║  ███████║█████╗  ███████║██║  ██║ ╚████╔╝                      ║
+<# ║  ██╔══██║██╔══╝  ██╔══██║██║  ██║  ╚██╔╝                       ║
+<# ║  ██║  ██║███████╗██║  ██║██████╔╝   ██║                        ║
+<# ║  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝                        ║
+<# ║                                                                  ║
+<# ║  ∞ SACRED GEOMETRY ∞  Organic Systems · Breathing Interfaces    ║
+<# ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
+<# ║  FILE: scripts/error-handling-workflow.ps1                                                    ║
+<# ║  LAYER: automation                                                  ║
+<# ╚══════════════════════════════════════════════════════════════════╝
+<# HEADY_BRAND:END
+#>
 #!/usr/bin/env pwsh
 # Error Handling and Recovery Workflow for Heady
 # Part of HCFP - Heady Continuous Full-Build Pipeline
