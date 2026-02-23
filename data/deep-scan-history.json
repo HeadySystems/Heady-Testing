@@ -82,5 +82,26 @@
     "healthyCount": 19,
     "totalCount": 19,
     "ts": "2026-02-23T04:18:58.712Z"
+  },
+  {
+    "scanId": "deep-scan-1771824544181",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-23T05:29:04.255Z"
+  },
+  {
+    "scanId": "deep-scan-1771824723678",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-23T05:32:03.751Z"
+  },
+  {
+    "scanId": "deep-scan-1771825012177",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-23T05:36:52.224Z"
   }
 ]

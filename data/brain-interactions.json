@@ -68,5 +68,33 @@
     "input": "Hey! What is HeadyBuddy and what can it do for me?",
     "output": "Hey there! 👋 I'm HeadyBuddy, part of the Heady AI ecosystem. I'm currently in local-intelligence mode. I can process your questions, and all conversations are stored in persistent 3D vector memory. What would you like to explore?",
     "timestamp": "2026-02-23T00:36:13.490Z"
+  },
+  {
+    "id": "402f53bd-6d26-417c-85ff-e67cab43620f",
+    "type": "chat",
+    "input": "Hello, what is HeadyBrain?",
+    "output": "[chat request at 2026-02-23T05:32:20.731Z]",
+    "timestamp": "2026-02-23T05:32:20.732Z"
+  },
+  {
+    "id": "dd7d6fd4-7fad-41d7-8c0d-c191a34167a6",
+    "type": "chat_contextual",
+    "input": "Hello, what is HeadyBrain?",
+    "output": "Hey there! 👋 I'm HeadyBrain, part of the Heady AI ecosystem. I'm currently in local-intelligence mode. I can process your questions, and all conversations are stored in persistent 3D vector memory. What would you like to explore?",
+    "timestamp": "2026-02-23T05:32:21.479Z"
+  },
+  {
+    "id": "9d26fd43-f4a6-4f11-9530-921103098914",
+    "type": "chat",
+    "input": "Hello!",
+    "output": "[chat request at 2026-02-23T05:36:46.947Z]",
+    "timestamp": "2026-02-23T05:36:46.947Z"
+  },
+  {
+    "id": "42a69626-4036-4119-87b3-dd06dd48631c",
+    "type": "chat_contextual",
+    "input": "Hello!",
+    "output": "Hey there! 👋 I'm HeadyBrain, part of the Heady AI ecosystem. I'm currently in local-intelligence mode. I can process your questions, and all conversations are stored in persistent 3D vector memory. What would you like to explore?",
+    "timestamp": "2026-02-23T05:36:47.548Z"
   }
 ]

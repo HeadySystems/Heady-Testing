@@ -199,52 +199,177 @@ async function chatViaOllama(message, system, temperature, max_tokens) {
     });
 }
 
+// ─── Claude SDK Smart Router ────────────────────────────────────────
+// Uses @anthropic-ai/sdk with intelligent model selection, extended thinking,
+// dual-org failover, and credit tracking.
+// Inspired by: NanoClaw (agent SDK patterns), Lumo (privacy-first design),
+// OpenClaw (task automation), HeadyClaudeOptimized (custom skills).
+
+const Anthropic = require("@anthropic-ai/sdk");
+
+// ── Dual-Org Configuration ──
+const CLAUDE_ORGS = [
+    {
+        name: "headysystems",
+        apiKey: process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY,
+        account: process.env.ANTHROPIC_ACCOUNT || "eric@headysystems.com",
+        adminKey: process.env.ANTHROPIC_ADMIN_KEY,
+        orgId: process.env.ANTHROPIC_ORG_ID,
+        credit: 30,  // initial estimate, updated at runtime
+    },
+    {
+        name: "headyconnection",
+        apiKey: process.env.ANTHROPIC_SECONDARY_KEY,
+        account: process.env.ANTHROPIC_SECONDARY_ACCOUNT || "eric@headyconnection.org",
+        credit: 60,
+    },
+];
+
+// ── Usage Tracker ──
+const USAGE_PATH = path.join(DATA_DIR, "claude-usage.json");
+let claudeUsage = { totalCost: 0, requests: 0, byModel: {}, byOrg: {}, history: [] };
+try { if (fs.existsSync(USAGE_PATH)) claudeUsage = JSON.parse(fs.readFileSync(USAGE_PATH, "utf8")); } catch { }
+
+function trackClaudeUsage(model, inputTokens, outputTokens, orgName, thinkingTokens = 0) {
+    // Pricing per 1M tokens (approximate as of 2025)
+    const pricing = {
+        "claude-haiku-4-5-20251001": { input: 0.80, output: 4.00 },
+        "claude-sonnet-4-20250514": { input: 3.00, output: 15.00 },
+        "claude-opus-4-20250514": { input: 15.00, output: 75.00 },
+    };
+    const p = pricing[model] || pricing["claude-sonnet-4-20250514"];
+    const cost = ((inputTokens / 1_000_000) * p.input) + (((outputTokens + thinkingTokens) / 1_000_000) * p.output);
+
+    claudeUsage.totalCost += cost;
+    claudeUsage.requests++;
+    claudeUsage.byModel[model] = (claudeUsage.byModel[model] || 0) + 1;
+    claudeUsage.byOrg[orgName] = (claudeUsage.byOrg[orgName] || 0) + cost;
+    claudeUsage.history.push({ model, cost: +cost.toFixed(6), inputTokens, outputTokens, thinkingTokens, org: orgName, ts: new Date().toISOString() });
+    if (claudeUsage.history.length > 500) claudeUsage.history = claudeUsage.history.slice(-500);
+
+    try { fs.writeFileSync(USAGE_PATH, JSON.stringify(claudeUsage, null, 2)); } catch { }
+    return cost;
+}
+
+// ── Complexity Analyzer ──
+// Determines the right model tier based on query content
+function analyzeComplexity(message, system) {
+    const msg = (message || "").toLowerCase();
+    const len = msg.length;
+
+    // CRITICAL — architecture, multi-step debugging, HeadyBattle/Soul escalation
+    if (msg.includes("architecture") || msg.includes("design system") || msg.includes("battle") ||
+        msg.includes("soul escalation") || msg.includes("refactor entire") || msg.includes("security audit") ||
+        (system && system.includes("HeadyBattle"))) {
+        return "critical";
+    }
+
+    // HIGH — code review, analysis, planning, complex reasoning
+    if (msg.includes("analyze") || msg.includes("debug") || msg.includes("optimize") ||
+        msg.includes("explain how") || msg.includes("implement") || msg.includes("plan") ||
+        msg.includes("compare") || msg.includes("review") || len > 500) {
+        return "high";
+    }
+
+    // LOW — greetings, simple questions, status checks
+    if (len < 50 || msg.includes("hello") || msg.includes("hi ") || msg.includes("hey") ||
+        msg.includes("thanks") || msg.includes("status") || msg.includes("what is") ||
+        msg.includes("who are") || msg.match(/^(yes|no|ok|sure|got it)/)) {
+        return "low";
+    }
+
+    // MEDIUM — everything else
+    return "medium";
+}
+
+// ── Model Selection ──
+function selectModel(complexity) {
+    switch (complexity) {
+        case "low": return { model: "claude-haiku-4-5-20251001", thinking: false, budget: 0 };
+        case "medium": return { model: "claude-sonnet-4-20250514", thinking: false, budget: 0 };
+        case "high": return { model: "claude-sonnet-4-20250514", thinking: true, budget: 10000 };
+        case "critical": return { model: "claude-opus-4-20250514", thinking: true, budget: 32000 };
+        default: return { model: "claude-sonnet-4-20250514", thinking: false, budget: 0 };
+    }
+}
+
+// ── Get Active Anthropic Client (with dual-org failover) ──
+function getClaudeClient() {
+    for (const org of CLAUDE_ORGS) {
+        if (org.apiKey && !org.apiKey.includes("placeholder") && !org.apiKey.includes("your_")) {
+            // Check if this org's budget is exhausted
+            const spent = claudeUsage.byOrg[org.name] || 0;
+            if (spent < org.credit) {
+                return { client: new Anthropic({ apiKey: org.apiKey }), org };
+            }
+        }
+    }
+    // Fallback: use first available key regardless of budget
+    const fallback = CLAUDE_ORGS.find(o => o.apiKey && !o.apiKey.includes("placeholder"));
+    if (fallback) return { client: new Anthropic({ apiKey: fallback.apiKey }), org: fallback };
+    throw new Error("no-claude-key");
+}
+
 async function chatViaClaude(message, system, temperature, max_tokens) {
-    const apiKey = process.env.CLAUDE_API_KEY;
-    if (!apiKey || apiKey.includes("placeholder")) throw new Error("no-key");
+    const { client, org } = getClaudeClient();
+    const complexity = analyzeComplexity(message, system);
+    const { model, thinking, budget } = selectModel(complexity);
 
-    const https = require("https");
-    const msgs = [{ role: "user", content: message }];
-    const sysPrompt = system || "You are HeadyBrain, the AI reasoning engine of the Heady ecosystem. Be helpful, concise, warm. Reference Brain, Battle, Creative, MCP, and 155-task auto-success engine when relevant.";
+    const sysPrompt = system || "You are HeadyBrain, the AI reasoning engine of the Heady ecosystem. Be helpful, concise, warm. Reference Brain, Battle, Creative, MCP, and the auto-success engine when relevant.";
 
-    const payload = JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: max_tokens || 2048,
+    // Build request params
+    const params = {
+        model,
+        max_tokens: max_tokens || (thinking ? 16384 : 2048),
         system: sysPrompt,
-        messages: msgs,
-    });
+        messages: [{ role: "user", content: message }],
+    };
 
-    return new Promise((resolve, reject) => {
-        const req = https.request({
-            hostname: "api.anthropic.com", path: "/v1/messages", method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "x-api-key": apiKey,
-                "anthropic-version": "2023-06-01",
-                "Content-Length": Buffer.byteLength(payload),
-            },
-            timeout: 30000,
-        }, (res) => {
-            let data = "";
-            res.on("data", (chunk) => (data += chunk));
-            res.on("end", () => {
-                try {
-                    const parsed = JSON.parse(data);
-                    if (parsed.content && parsed.content[0]) {
-                        resolve({ response: parsed.content[0].text, model: parsed.model || "claude-sonnet" });
-                    } else if (parsed.error) {
-                        reject(new Error(parsed.error.message || "Claude error"));
-                    } else {
-                        reject(new Error("unexpected-response"));
-                    }
-                } catch { reject(new Error("parse-error")); }
-            });
-        });
-        req.on("error", reject);
-        req.on("timeout", () => { req.destroy(); reject(new Error("timeout")); });
-        req.write(payload);
-        req.end();
-    });
+    // Add extended thinking for high/critical complexity
+    if (thinking && budget > 0) {
+        params.thinking = { type: "enabled", budget_tokens: budget };
+    }
+
+    // Temperature only when NOT using thinking (Anthropic API constraint)
+    if (!thinking && temperature) {
+        params.temperature = temperature;
+    }
+
+    const response = await client.messages.create(params);
+
+    // Extract text from response (may include thinking blocks)
+    let responseText = "";
+    let thinkingText = "";
+    let thinkingTokens = 0;
+
+    for (const block of response.content) {
+        if (block.type === "thinking") {
+            thinkingText += block.thinking;
+            thinkingTokens += (block.thinking || "").length / 4; // rough estimate
+        } else if (block.type === "text") {
+            responseText += block.text;
+        }
+    }
+
+    // Track usage
+    const cost = trackClaudeUsage(
+        model,
+        response.usage?.input_tokens || 0,
+        response.usage?.output_tokens || 0,
+        org.name,
+        thinkingTokens
+    );
+
+    return {
+        response: responseText,
+        model: response.model || model,
+        complexity,
+        thinking_used: thinking,
+        thinking_summary: thinkingText ? thinkingText.substring(0, 200) + "..." : null,
+        cost: +cost.toFixed(6),
+        org: org.name,
+        usage: response.usage,
+    };
 }
 
 async function chatViaHuggingFace(message, system, temperature, max_tokens) {
@@ -665,6 +790,29 @@ router.get("/health", (req, res) => {
         interactions_logged: interactionCount,
         memory_enabled: !!memoryWrapper,
         endpoints: ["/api/brain/chat", "/api/brain/analyze", "/api/brain/embed", "/api/brain/search"],
+        ts: new Date().toISOString(),
+    });
+});
+
+/**
+ * GET /api/brain/claude-usage
+ * Monitor Claude SDK usage, costs, and model distribution
+ */
+router.get("/claude-usage", (req, res) => {
+    res.json({
+        ok: true,
+        totalCost: +claudeUsage.totalCost.toFixed(4),
+        totalRequests: claudeUsage.requests,
+        byModel: claudeUsage.byModel,
+        byOrg: Object.fromEntries(
+            Object.entries(claudeUsage.byOrg || {}).map(([k, v]) => [k, +v.toFixed(4)])
+        ),
+        budgetRemaining: {
+            headysystems: +(30 - (claudeUsage.byOrg?.headysystems || 0)).toFixed(2),
+            headyconnection: +(60 - (claudeUsage.byOrg?.headyconnection || 0)).toFixed(2),
+            total: +(90 - claudeUsage.totalCost).toFixed(2),
+        },
+        recentHistory: (claudeUsage.history || []).slice(-10),
         ts: new Date().toISOString(),
     });
 });
