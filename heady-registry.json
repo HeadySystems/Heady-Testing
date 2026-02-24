@@ -750,7 +750,7 @@
       "endpoint": "/api/brain/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 15,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "soul",
@@ -760,7 +760,7 @@
       "endpoint": "/api/soul/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 3,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "conductor",
@@ -769,8 +769,8 @@
       "critical": true,
       "endpoint": "/api/conductor/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 2,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "battle",
@@ -779,8 +779,8 @@
       "critical": false,
       "endpoint": "/api/battle/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 1,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "hcfp",
@@ -790,7 +790,7 @@
       "endpoint": "/api/hcfp/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "patterns",
@@ -800,7 +800,7 @@
       "endpoint": "/api/patterns/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "lens",
@@ -809,8 +809,8 @@
       "critical": false,
       "endpoint": "/api/lens/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 2,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "vinci",
@@ -820,7 +820,7 @@
       "endpoint": "/api/vinci/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "notion",
@@ -829,8 +829,8 @@
       "critical": false,
       "endpoint": "/api/notion/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 1,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "ops",
@@ -840,7 +840,7 @@
       "endpoint": "/api/ops/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "maintenance",
@@ -849,8 +849,8 @@
       "critical": true,
       "endpoint": "/api/maintenance/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 1,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "registry",
@@ -860,7 +860,7 @@
       "endpoint": "/api/registry",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 3,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "auto-success",
@@ -870,7 +870,7 @@
       "endpoint": "/api/auto-success/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "stream",
@@ -879,8 +879,8 @@
       "critical": false,
       "endpoint": "/api/stream/clients",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 2,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "cloud",
@@ -889,8 +889,8 @@
       "critical": true,
       "endpoint": "/api/cloud/status",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 1,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "memory",
@@ -899,8 +899,8 @@
       "critical": false,
       "endpoint": "/api/memory/health",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScanLatencyMs": 3,
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "config",
@@ -910,7 +910,7 @@
       "endpoint": "/api/config/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "system",
@@ -920,7 +920,7 @@
       "endpoint": "/api/system/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     },
     {
       "id": "nodes",
@@ -930,7 +930,7 @@
       "endpoint": "/api/nodes/health",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:11:44.458Z"
+      "lastScannedAt": "2026-02-24T07:25:05.356Z"
     }
   ],
   "cloudProviders": {
@@ -1022,5 +1022,5 @@
     }
   },
   "overallSystemScore": 0.54,
-  "lastDeepScan": "2026-02-24T07:11:44.458Z"
+  "lastDeepScan": "2026-02-24T07:25:05.356Z"
 }

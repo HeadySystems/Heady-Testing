@@ -1885,99 +1885,62 @@ try {
 }
 
 // ─── Mount src/routes/brain.js (chat, analyze, embed, search) ───────
-// Brain routes are now WRAPPED by the orchestrator for task tracking.
-// The orchestrator intercepts requests, tracks agents/tasks/latency,
-// then forwards to the actual brain handler.
+// Architecture: middleware → orchestrator-track → brain handler
+//   1. Vector pipeline middleware scans persistent memory (memory-first rule)
+//   2. Orchestrator tracking middleware wraps each request as a tracked task
+//   3. Brain router handles the actual AI provider calls
 try {
   const { router: brainCoreRoutes } = require("./src/routes/brain");
 
-  // Register local dispatch handlers with orchestrator
-  // Each handler simulates what the brain route does, tracked by orchestrator
-  const http = require("http");
-  function localBrainRequest(path, body) {
-    return new Promise((resolve, reject) => {
-      const payload = JSON.stringify(body);
-      const req = http.request({
-        hostname: "127.0.0.1", port: PORT, path, method: "POST",
-        headers: { "Content-Type": "application/json", "Content-Length": Buffer.byteLength(payload) },
-        timeout: 60000,
-      }, (res) => {
-        let data = "";
-        res.on("data", c => data += c);
-        res.on("end", () => { try { resolve(JSON.parse(data)); } catch { resolve({ response: data }); } });
-      });
-      req.on("error", reject);
-      req.on("timeout", () => { req.destroy(); reject(new Error("timeout")); });
-      req.write(payload);
-      req.end();
-    });
-  }
+  // Connect orchestrator to vector memory for direct submit() memory scanning
+  orchestrator.setVectorMemory(vectorMemory);
 
-  // Mount brain routes at a HIDDEN internal path
-  app.use("/api/_brain_internal", brainCoreRoutes);
+  // Orchestrator task tracking middleware — wraps every /brain/* as a tracked task
+  app.use("/api/brain", (req, res, next) => {
+    // Only track POST requests (chat, analyze, embed, search)
+    if (req.method !== "POST") return next();
 
-  // Orchestrator-tracked wrappers for each brain action
-  orchestrator.registerHandler("chat", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/chat", payload);
-  });
-  orchestrator.registerHandler("analyze", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/analyze", payload);
-  });
-  orchestrator.registerHandler("embed", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/embed", payload);
-  });
-  orchestrator.registerHandler("search", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/search", payload);
-  });
-  orchestrator.registerHandler("complete", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/chat", { ...payload, message: payload.prompt || payload.message });
-  });
-  orchestrator.registerHandler("refactor", async (payload) => {
-    return localBrainRequest("/api/_brain_internal/analyze", { ...payload, content: payload.code, type: "refactor" });
+    const action = req.path.replace(/^\//, "").split("/")[0] || "unknown";
+    const start = Date.now();
+    const serviceGroup = orchestrator.router.route({ action });
+
+    // Spawn/find an agent for this service group
+    const agent = orchestrator._getOrCreateAgent(serviceGroup);
+    if (agent) {
+      agent.busy = true;
+      orchestrator._audit({ type: "task:start", action, agent: agent.id, serviceGroup });
+
+      // Watch for response completion
+      const origEnd = res.end.bind(res);
+      res.end = function (...args) {
+        const latency = Date.now() - start;
+        agent.taskCount++;
+        agent.totalLatency += latency;
+        agent.lastActive = Date.now();
+        agent.busy = false;
+        orchestrator.completedTasks++;
+        orchestrator._audit({ type: "task:complete", action, agent: agent.id, latency });
+        orchestrator.taskHistory.push({ ok: true, action, latency, agent: agent.id, serviceGroup, ts: Date.now() });
+        if (orchestrator.taskHistory.length > 100) orchestrator.taskHistory = orchestrator.taskHistory.slice(-100);
+        return origEnd(...args);
+      };
+    }
+
+    next();
   });
 
-  // PUBLIC brain routes — go through orchestrator
-  app.post("/api/brain/chat", async (req, res) => {
-    try {
-      const result = await orchestrator.submit({ action: "chat", payload: req.body });
-      if (result.ok && result.result) {
-        res.json({ ...result.result, orchestrated: true, agent: result.agent, latency_ms: result.latency });
-      } else {
-        res.json(result);
-      }
-    } catch (err) { res.status(500).json({ error: err.message }); }
-  });
-  app.post("/api/brain/analyze", async (req, res) => {
-    try {
-      const result = await orchestrator.submit({ action: "analyze", payload: req.body });
-      if (result.ok && result.result) {
-        res.json({ ...result.result, orchestrated: true, agent: result.agent, latency_ms: result.latency });
-      } else { res.json(result); }
-    } catch (err) { res.status(500).json({ error: err.message }); }
-  });
-  app.post("/api/brain/embed", async (req, res) => {
-    try {
-      const result = await orchestrator.submit({ action: "embed", payload: req.body });
-      if (result.ok && result.result) {
-        res.json({ ...result.result, orchestrated: true, agent: result.agent, latency_ms: result.latency });
-      } else { res.json(result); }
-    } catch (err) { res.status(500).json({ error: err.message }); }
-  });
-  app.post("/api/brain/search", async (req, res) => {
-    try {
-      const result = await orchestrator.submit({ action: "search", payload: req.body });
-      if (result.ok && result.result) {
-        res.json({ ...result.result, orchestrated: true, agent: result.agent, latency_ms: result.latency });
-      } else { res.json(result); }
-    } catch (err) { res.status(500).json({ error: err.message }); }
-  });
-
-  // Keep the memory-receipts and other GET routes accessible
+  // Mount the actual brain routes
   app.use("/api/brain", brainCoreRoutes);
 
+  // Register handler refs in orchestrator for direct submit() calls (non-HTTP)
+  orchestrator.registerHandler("chat", async (payload) => ({ note: "use /api/brain/chat HTTP endpoint" }));
+  orchestrator.registerHandler("analyze", async (payload) => ({ note: "use /api/brain/analyze HTTP endpoint" }));
+  orchestrator.registerHandler("embed", async (payload) => ({ note: "use /api/brain/embed HTTP endpoint" }));
+  orchestrator.registerHandler("search", async (payload) => ({ note: "use /api/brain/search HTTP endpoint" }));
+
   console.log("  ∞ HeadyBrain Core Routes: LOADED (orchestrated)");
-  console.log("    → ALL /brain/* requests tracked by orchestrator");
-  console.log("    → Handlers: chat, analyze, embed, search, complete, refactor");
+  console.log("    → Memory-first: pipeline scans vector memory before every action");
+  console.log("    → Orchestrator: tracks agents + tasks on every /brain/* POST");
 } catch (err) {
   console.warn(`  ⚠ HeadyBrain Core Routes not loaded: ${err.message}`);
 }

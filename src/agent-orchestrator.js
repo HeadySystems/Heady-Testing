@@ -208,9 +208,17 @@ class AgentOrchestrator extends EventEmitter {
     }
 
     /**
+     * Attach vector memory for memory-first scanning.
+     * RULE: Before ANY task dispatch, scan persistent memory for context.
+     */
+    setVectorMemory(vectorMem) {
+        this.vectorMem = vectorMem;
+        console.log("  ∞ Orchestrator: vector memory attached (memory-first scanning ACTIVE)");
+    }
+
+    /**
      * Submit a task — the primary entry point.
-     * If a local handler is registered, dispatch in-process.
-     * Otherwise queue for agent execution.
+     * ENFORCES: memory scan → dispatch → store result
      */
     async submit(task) {
         const serviceGroup = this.router.route(task);
@@ -229,13 +237,37 @@ class AgentOrchestrator extends EventEmitter {
         this._audit({ type: "task:start", action: task.action, agent: agent.id, serviceGroup });
 
         try {
+            // ── MEMORY-FIRST: Scan persistent memory BEFORE dispatch ──
+            let vectorContext = null;
+            const payload = task.payload || {};
+            const queryText = payload.message || payload.content || payload.text || payload.query || payload.code || payload.prompt || "";
+
+            if (this.vectorMem && queryText && queryText.length >= 5) {
+                try {
+                    const memories = await this.vectorMem.queryMemory(queryText, 3);
+                    const relevant = memories.filter(m => m.score > 0.3);
+                    if (relevant.length > 0) {
+                        vectorContext = relevant.map(m => m.content).join("\n---\n");
+                        // Inject context into payload
+                        const prefix = `[HeadyBrain Context — ${relevant.length} memories]\n${vectorContext}\n[End Context]\n\n`;
+                        if (payload.message) payload.message = prefix + payload.message;
+                        else if (payload.content) payload.content = prefix + payload.content;
+                        else if (payload.text) payload.text = prefix + payload.text;
+                        else if (payload.prompt) payload.prompt = prefix + payload.prompt;
+                    }
+                    this._audit({ type: "memory:scan", action: task.action, matches: relevant.length, query_length: queryText.length });
+                } catch (memErr) {
+                    // Memory scan failed — continue without, don't block
+                    this._audit({ type: "memory:scan_error", error: memErr.message });
+                }
+            }
+
             let result;
             const handler = this.handlers.get(task.action);
             if (handler) {
                 // LOCAL DISPATCH: call the registered handler function directly
-                result = await handler(task.payload || {});
+                result = await handler(payload);
             } else {
-                // No handler registered — return an error
                 throw new Error(`No handler registered for action '${task.action}'`);
             }
 
@@ -245,6 +277,20 @@ class AgentOrchestrator extends EventEmitter {
             agent.busy = false;
             this.completedTasks++;
 
+            // ── MEMORY-STORE: Save the result in vector memory ──
+            if (this.vectorMem && queryText && result) {
+                try {
+                    const responseText = typeof result === "string" ? result :
+                        result.response || result.result || JSON.stringify(result).substring(0, 500);
+                    if (responseText && responseText.length > 10) {
+                        await this.vectorMem.ingestMemory({
+                            content: `Q: ${queryText.substring(0, 500)}\nA: ${String(responseText).substring(0, 1000)}`,
+                            metadata: { type: "orchestrator_qa", action: task.action, agent: agent.id },
+                        });
+                    }
+                } catch { }
+            }
+
             const taskRecord = {
                 ok: true,
                 action: task.action,
@@ -252,6 +298,7 @@ class AgentOrchestrator extends EventEmitter {
                 latency: Date.now() - start,
                 agent: agent.id,
                 serviceGroup,
+                memoryScanned: !!vectorContext,
             };
 
             this._audit({ type: "task:complete", action: task.action, agent: agent.id, latency: taskRecord.latency });

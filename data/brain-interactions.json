@@ -1034,5 +1034,33 @@
     "input": "function add(a,b) { return a+b; }",
     "output": "[analysis of code]",
     "timestamp": "2026-02-24T07:12:30.513Z"
+  },
+  {
+    "id": "580fd357-0fe2-4252-aaf1-cce6eaf7767e",
+    "type": "analyze",
+    "input": "[HeadyBrain Context — 3 relevant memories found]\nEmbedding request: [HeadyBrain Context — 3 relevant memories found]\nEmbedding request: 3D vector storage schema optimization and indexing\n---\nEmbedding",
+    "output": "[analysis of general]",
+    "timestamp": "2026-02-24T07:16:22.915Z"
+  },
+  {
+    "id": "5afe5644-dc51-4a0b-b89a-5a7beb6a1b70",
+    "type": "analyze",
+    "input": "[HeadyBrain Context — 3 relevant memories found]\nKnowledge search: test\n---\nKnowledge search: test\n---\nEmbedding request: test\n[End Context]\n\ntest function",
+    "output": "[analysis of code]",
+    "timestamp": "2026-02-24T07:20:53.460Z"
+  },
+  {
+    "id": "2ea3e921-cecb-422c-b2b5-3fb0d0ffe1d6",
+    "type": "analyze",
+    "input": "[HeadyBrain Context — 1 relevant memories found]\nCode analysis (code): function add(a,b) { return a+b; }\n[End Context]\n\ntest function add(a,b){return a+b}",
+    "output": "[analysis of code]",
+    "timestamp": "2026-02-24T07:25:07.215Z"
+  },
+  {
+    "id": "94bfe4f5-d9b4-46ba-9a3b-a7039e900402",
+    "type": "analyze",
+    "input": "[HeadyBrain Context — 2 relevant memories found]\nKnowledge search: test\n---\nKnowledge search: test\n[End Context]\n\ntest",
+    "output": "[analysis of code]",
+    "timestamp": "2026-02-24T07:25:13.650Z"
   }
 ]

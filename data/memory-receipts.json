@@ -2068,5 +2068,41 @@
     "fallbackUsed": false,
     "priorityFix": null,
     "ts": "2026-02-24T07:12:30.631Z"
+  },
+  {
+    "id": "e87db936-43f2-4394-be0c-2f7e1abc42f7",
+    "stored": "Stored in vector DB: \"Code analysis (general): [HeadyBrain Context — 3 relevant memories found]\nEmbedding request: [HeadyBrain Context — 3 rel...\" (225 chars, type: brain_analyze)",
+    "notStored": "Full content stored — nothing omitted",
+    "method": "vector-db",
+    "fallbackUsed": false,
+    "priorityFix": null,
+    "ts": "2026-02-24T07:16:24.756Z"
+  },
+  {
+    "id": "c64bb612-83c3-4f37-8831-31ab669a8b72",
+    "stored": "Stored in vector DB: \"Code analysis (code): [HeadyBrain Context — 3 relevant memories found]\nKnowledge search: test\n---\nKnowledge search: test...\" (177 chars, type: brain_analyze)",
+    "notStored": "Full content stored — nothing omitted",
+    "method": "vector-db",
+    "fallbackUsed": false,
+    "priorityFix": null,
+    "ts": "2026-02-24T07:20:53.567Z"
+  },
+  {
+    "id": "3f9cfc1f-1231-4fd3-8ac2-345de0e128b3",
+    "stored": "Stored in vector DB: \"Code analysis (code): [HeadyBrain Context — 1 relevant memories found]\nCode analysis (code): function add(a,b) { return ...\" (176 chars, type: brain_analyze)",
+    "notStored": "Full content stored — nothing omitted",
+    "method": "vector-db",
+    "fallbackUsed": false,
+    "priorityFix": null,
+    "ts": "2026-02-24T07:25:07.376Z"
+  },
+  {
+    "id": "39dfbf0d-5b55-487f-83de-f93cf4c4f0e2",
+    "stored": "Stored in vector DB: \"Code analysis (code): [HeadyBrain Context — 2 relevant memories found]\nKnowledge search: test\n---\nKnowledge search: test...\" (140 chars, type: brain_analyze)",
+    "notStored": "Full content stored — nothing omitted",
+    "method": "vector-db",
+    "fallbackUsed": false,
+    "priorityFix": null,
+    "ts": "2026-02-24T07:25:14.676Z"
   }
 ]

@@ -362,5 +362,33 @@
     "healthyCount": 19,
     "totalCount": 19,
     "ts": "2026-02-24T07:11:44.458Z"
+  },
+  {
+    "scanId": "deep-scan-1771917349815",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-24T07:15:49.893Z"
+  },
+  {
+    "scanId": "deep-scan-1771917606982",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-24T07:20:07.048Z"
+  },
+  {
+    "scanId": "deep-scan-1771917628388",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-24T07:20:28.440Z"
+  },
+  {
+    "scanId": "deep-scan-1771917905301",
+    "overallScore": 0.54,
+    "healthyCount": 19,
+    "totalCount": 19,
+    "ts": "2026-02-24T07:25:05.356Z"
   }
 ]

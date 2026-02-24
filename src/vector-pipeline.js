@@ -43,7 +43,8 @@ function createVectorAugmentedMiddleware(vectorMem) {
     }
 
     return async function vectorAugment(req, res, next) {
-        // Only augment brain endpoints
+        // Augment brain endpoints ONLY on public path — NOT /_brain_internal/
+        // (internal loopback from orchestrator must NOT re-enter middleware or it deadlocks)
         if (!req.path.startsWith("/api/brain/")) return next();
 
         const body = req.body || {};
