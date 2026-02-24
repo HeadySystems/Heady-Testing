@@ -400,7 +400,7 @@ console.log("  ∞ HeadyCorrections: LOADED (behavior analysis + audit trail)");
 const { getOrchestrator } = require("./src/agent-orchestrator");
 const orchestrator = getOrchestrator({ baseUrl: "http://127.0.0.1:" + PORT, apiKey: process.env.HEADY_API_KEY });
 orchestrator.registerRoutes(app);
-orchestrator.on("agent:spawned", (d) => console.log(`  ∞ Agent spawned: ${d.id} (${d.serviceGroup})`));
+orchestrator.on("supervisor:spawned", (d) => console.log(`  ∞ HeadySupervisor spawned: ${d.id} (${d.serviceGroup})`));
 orchestrator.on("task:complete", (d) => { /* silent */ });
 console.log("  ∞ AgentOrchestrator: LOADED (dynamic spawn + deterministic routing)");
 
@@ -1904,23 +1904,23 @@ try {
     const start = Date.now();
     const serviceGroup = orchestrator.router.route({ action });
 
-    // Spawn/find an agent for this service group
-    const agent = orchestrator._getOrCreateAgent(serviceGroup);
-    if (agent) {
-      agent.busy = true;
-      orchestrator._audit({ type: "task:start", action, agent: agent.id, serviceGroup });
+    // Spawn/find a HeadySupervisor for this service group
+    const supervisor = orchestrator._getOrCreateSupervisor(serviceGroup);
+    if (supervisor) {
+      supervisor.busy = true;
+      orchestrator._audit({ type: "task:start", action, supervisor: supervisor.id, serviceGroup });
 
       // Watch for response completion
       const origEnd = res.end.bind(res);
       res.end = function (...args) {
         const latency = Date.now() - start;
-        agent.taskCount++;
-        agent.totalLatency += latency;
-        agent.lastActive = Date.now();
-        agent.busy = false;
+        supervisor.taskCount++;
+        supervisor.totalLatency += latency;
+        supervisor.lastActive = Date.now();
+        supervisor.busy = false;
         orchestrator.completedTasks++;
-        orchestrator._audit({ type: "task:complete", action, agent: agent.id, latency });
-        orchestrator.taskHistory.push({ ok: true, action, latency, agent: agent.id, serviceGroup, ts: Date.now() });
+        orchestrator._audit({ type: "task:complete", action, supervisor: supervisor.id, latency });
+        orchestrator.taskHistory.push({ ok: true, action, latency, supervisor: supervisor.id, serviceGroup, ts: Date.now() });
         if (orchestrator.taskHistory.length > 100) orchestrator.taskHistory = orchestrator.taskHistory.slice(-100);
         return origEnd(...args);
       };

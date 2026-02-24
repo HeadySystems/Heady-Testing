@@ -7,7 +7,7 @@
  *   - Agents spawn on demand per service group
  *   - Tasks get tracked, scaled, and reclaimed
  *
- * Service Groups (each can have N duplicate nodes):
+ * HeadySupervisors (each service group can have N duplicate nodes):
  *   reasoning  → brain.chat, brain.analyze, brain.complete
  *   embedding  → brain.embed, vector store/query
  *   search     → brain.search, knowledge retrieval
@@ -28,7 +28,7 @@ const IDLE_RECLAIM_MS = Math.round(PHI ** 6 * 1000); // φ⁶ ≈ 17,944ms
 const SCALE_THRESHOLD = 3;
 const SCALE_CHECK_MS = Math.round(PHI ** 4 * 1000);  // φ⁴ ≈ 6,854ms
 
-class HeadyAgent {
+class HeadySupervisor {
     constructor(id, serviceGroup) {
         this.id = id;
         this.serviceGroup = serviceGroup;
@@ -44,7 +44,7 @@ class HeadyAgent {
         return this.taskCount > 0 ? Math.round(this.totalLatency / this.taskCount) : 0;
     }
 
-    get stats() {
+    get supervisorStats() {
         return {
             id: this.id,
             serviceGroup: this.serviceGroup,
@@ -89,7 +89,7 @@ class AgentOrchestrator extends EventEmitter {
     constructor(options = {}) {
         super();
         this.maxConcurrent = options.maxConcurrent || MAX_CONCURRENT;
-        this.agents = new Map();
+        this.supervisors = new Map();
         this.taskQueue = [];
         this.completedTasks = 0;
         this.failedTasks = 0;
@@ -128,23 +128,23 @@ class AgentOrchestrator extends EventEmitter {
         console.log(`  ∞ Orchestrator: handler registered for '${action}'`);
     }
 
-    _getOrCreateAgent(serviceGroup) {
+    _getOrCreateSupervisor(serviceGroup) {
         // Find idle agent for this service group
-        for (const [id, agent] of this.agents) {
-            if (agent.serviceGroup === serviceGroup && !agent.busy) return agent;
+        for (const [id, agent] of this.supervisors) {
+            if (agent.serviceGroup === serviceGroup && !agent.busy) return agent; // HeadySupervisor
         }
         // Liquid: check per-group limit, then global limit
         const groupCount = this.groupCounts[serviceGroup] || 0;
         const groupLimit = this.groupLimits[serviceGroup] || 5;
-        if (groupCount < groupLimit && this.agents.size < this.maxConcurrent) {
+        if (groupCount < groupLimit && this.supervisors.size < this.maxConcurrent) {
             const nodeNum = groupCount + 1;
             const id = `${serviceGroup}-node-${nodeNum}-${Date.now().toString(36)}`;
-            const agent = new HeadyAgent(id, serviceGroup);
-            this.agents.set(id, agent);
+            const supervisor = new HeadySupervisor(id, serviceGroup);
+            this.supervisors.set(id, supervisor);
             this.groupCounts[serviceGroup] = nodeNum;
-            this.emit("agent:spawned", { id, serviceGroup, nodeNum, groupTotal: nodeNum });
-            this._audit({ type: "liquid:spawn", serviceGroup, nodeNum, totalAgents: this.agents.size });
-            return agent;
+            this.emit("supervisor:spawned", { id, serviceGroup, nodeNum, groupTotal: nodeNum });
+            this._audit({ type: "liquid:spawn", serviceGroup, nodeNum, totalSupervisors: this.supervisors.size });
+            return supervisor;
         }
         return null;
     }
@@ -153,7 +153,7 @@ class AgentOrchestrator extends EventEmitter {
     scaleUp(serviceGroup, count = 1) {
         const spawned = [];
         for (let i = 0; i < count; i++) {
-            const agent = this._getOrCreateAgent(serviceGroup);
+            const agent = this._getOrCreateSupervisor(serviceGroup);
             if (agent) spawned.push(agent.id);
         }
         this.scaleEvents.push({ type: "scale_up", serviceGroup, count: spawned.length, ts: Date.now() });
@@ -163,9 +163,9 @@ class AgentOrchestrator extends EventEmitter {
     /** Scale down idle agents in a service group */
     scaleDown(serviceGroup) {
         let removed = 0;
-        for (const [id, agent] of this.agents) {
+        for (const [id, agent] of this.supervisors) {
             if (agent.serviceGroup === serviceGroup && !agent.busy) {
-                this.agents.delete(id);
+                this.supervisors.delete(id);
                 this.groupCounts[serviceGroup] = Math.max(0, (this.groupCounts[serviceGroup] || 1) - 1);
                 removed++;
                 this._audit({ type: "liquid:reclaim", agent: id, serviceGroup });
@@ -189,11 +189,11 @@ class AgentOrchestrator extends EventEmitter {
         }
         // Scale DOWN idle agents
         const now = Date.now();
-        for (const [id, agent] of this.agents) {
+        for (const [id, agent] of this.supervisors) {
             if (!agent.busy && agent.taskCount > 0 && (now - agent.lastActive) > IDLE_RECLAIM_MS) {
-                const groupAgents = [...this.agents.values()].filter(a => a.serviceGroup === agent.serviceGroup);
-                if (groupAgents.length > 1) {
-                    this.agents.delete(id);
+                const groupSupervisors = [...this.supervisors.values()].filter(a => a.serviceGroup === agent.serviceGroup);
+                if (groupSupervisors.length > 1) {
+                    this.supervisors.delete(id);
                     this.groupCounts[agent.serviceGroup] = Math.max(0, (this.groupCounts[agent.serviceGroup] || 1) - 1);
                     this._audit({ type: "liquid:idle_reclaim", agent: id, idle_ms: now - agent.lastActive });
                 }
@@ -222,9 +222,9 @@ class AgentOrchestrator extends EventEmitter {
      */
     async submit(task) {
         const serviceGroup = this.router.route(task);
-        const agent = this._getOrCreateAgent(serviceGroup);
+        const supervisor = this._getOrCreateSupervisor(serviceGroup);
 
-        if (!agent) {
+        if (!supervisor) {
             // Queue it
             return new Promise((resolve, reject) => {
                 this.taskQueue.push({ task, serviceGroup, resolve, reject });
@@ -233,8 +233,8 @@ class AgentOrchestrator extends EventEmitter {
         }
 
         const start = Date.now();
-        agent.busy = true;
-        this._audit({ type: "task:start", action: task.action, agent: agent.id, serviceGroup });
+        supervisor.busy = true;
+        this._audit({ type: "task:start", action: task.action, supervisor: supervisor.id, serviceGroup });
 
         try {
             // ── MEMORY-FIRST: Scan persistent memory BEFORE dispatch ──
@@ -271,10 +271,10 @@ class AgentOrchestrator extends EventEmitter {
                 throw new Error(`No handler registered for action '${task.action}'`);
             }
 
-            agent.taskCount++;
-            agent.totalLatency += Date.now() - start;
-            agent.lastActive = Date.now();
-            agent.busy = false;
+            supervisor.taskCount++;
+            supervisor.totalLatency += Date.now() - start;
+            supervisor.lastActive = Date.now();
+            supervisor.busy = false;
             this.completedTasks++;
 
             // ── MEMORY-STORE: Save the result in vector memory ──
@@ -285,7 +285,7 @@ class AgentOrchestrator extends EventEmitter {
                     if (responseText && responseText.length > 10) {
                         await this.vectorMem.ingestMemory({
                             content: `Q: ${queryText.substring(0, 500)}\nA: ${String(responseText).substring(0, 1000)}`,
-                            metadata: { type: "orchestrator_qa", action: task.action, agent: agent.id },
+                            metadata: { type: "orchestrator_qa", action: task.action, supervisor: supervisor.id },
                         });
                     }
                 } catch { }
@@ -296,12 +296,12 @@ class AgentOrchestrator extends EventEmitter {
                 action: task.action,
                 result,
                 latency: Date.now() - start,
-                agent: agent.id,
+                supervisor: supervisor.id,
                 serviceGroup,
                 memoryScanned: !!vectorContext,
             };
 
-            this._audit({ type: "task:complete", action: task.action, agent: agent.id, latency: taskRecord.latency });
+            this._audit({ type: "task:complete", action: task.action, supervisor: supervisor.id, latency: taskRecord.latency });
             this.taskHistory.push({ ...taskRecord, ts: Date.now() });
             if (this.taskHistory.length > 100) this.taskHistory = this.taskHistory.slice(-100);
             this.emit("task:complete", taskRecord);
@@ -309,13 +309,13 @@ class AgentOrchestrator extends EventEmitter {
             this._processQueue();
             return taskRecord;
         } catch (err) {
-            agent.errors++;
-            agent.busy = false;
-            agent.lastActive = Date.now();
+            supervisor.errors++;
+            supervisor.busy = false;
+            supervisor.lastActive = Date.now();
             this.failedTasks++;
-            this._audit({ type: "task:error", action: task.action, agent: agent.id, error: err.message });
+            this._audit({ type: "task:error", action: task.action, supervisor: supervisor.id, error: err.message });
             this._processQueue();
-            return { ok: false, error: err.message, latency: Date.now() - start, agent: agent.id };
+            return { ok: false, error: err.message, latency: Date.now() - start, supervisor: supervisor.id };
         }
     }
 
@@ -345,11 +345,11 @@ class AgentOrchestrator extends EventEmitter {
 
     /** Orchestrator stats — liquid architecture view */
     getStats() {
-        const agents = [];
-        this.agents.forEach(a => agents.push(a.stats));
+        const supervisors = [];
+        this.supervisors.forEach(a => supervisors.push(a.supervisorStats));
 
         const groups = {};
-        this.agents.forEach(a => {
+        this.supervisors.forEach(a => {
             if (!groups[a.serviceGroup]) groups[a.serviceGroup] = { nodes: 0, busy: 0, tasks: 0, errors: 0, limit: this.groupLimits[a.serviceGroup] || 5 };
             groups[a.serviceGroup].nodes++;
             if (a.busy) groups[a.serviceGroup].busy++;
@@ -359,7 +359,7 @@ class AgentOrchestrator extends EventEmitter {
 
         return {
             architecture: "liquid-dynamic",
-            totalAgents: this.agents.size,
+            totalSupervisors: this.supervisors.size,
             maxConcurrent: this.maxConcurrent,
             completedTasks: this.completedTasks,
             failedTasks: this.failedTasks,
@@ -367,7 +367,7 @@ class AgentOrchestrator extends EventEmitter {
             handlersRegistered: [...this.handlers.keys()],
             uptime: Date.now() - this.started,
             groups,
-            agents,
+            supervisors,
             recentScaleEvents: this.scaleEvents.slice(-20),
             recentTasks: this.taskHistory.slice(-10).map(t => ({
                 action: t.action, ok: t.ok, latency: t.latency, agent: t.agent, serviceGroup: t.serviceGroup,
@@ -377,7 +377,7 @@ class AgentOrchestrator extends EventEmitter {
 
     shutdown() {
         clearInterval(this._scaleInterval);
-        this.agents.clear();
+        this.supervisors.clear();
         this.taskQueue = [];
         this._audit({ type: "shutdown", completedTasks: this.completedTasks });
         this.emit("shutdown");
@@ -413,8 +413,8 @@ class AgentOrchestrator extends EventEmitter {
 
         app.get("/api/orchestrator/nodes", (req, res) => {
             const nodes = [];
-            this.agents.forEach(a => nodes.push({
-                ...a.stats,
+            this.supervisors.forEach(a => nodes.push({
+                ...a.supervisorStats,
                 age: Date.now() - a.created,
             }));
             res.json({ ok: true, nodes, groups: this.getStats().groups });
@@ -425,10 +425,10 @@ class AgentOrchestrator extends EventEmitter {
             if (!serviceGroup || !action) return res.status(400).json({ error: "serviceGroup + action required" });
             if (action === "up") {
                 const spawned = this.scaleUp(serviceGroup, count || 1);
-                res.json({ ok: true, action: "scale_up", spawned, totalAgents: this.agents.size });
+                res.json({ ok: true, action: "scale_up", spawned, totalSupervisors: this.supervisors.size });
             } else if (action === "down") {
                 const removed = this.scaleDown(serviceGroup);
-                res.json({ ok: true, action: "scale_down", removed, totalAgents: this.agents.size });
+                res.json({ ok: true, action: "scale_down", removed, totalSupervisors: this.supervisors.size });
             } else {
                 res.status(400).json({ error: "action must be 'up' or 'down'" });
             }
