@@ -1,6 +1,6 @@
 {
   "registryVersion": "3.3.0",
-  "updatedAt": "2026-02-21T11:58:00.000Z",
+  "updatedAt": "2026-02-24T19:34:06.549Z",
   "description": "HeadyRegistry — Central catalog and control point for the Heady ecosystem",
   "last_deployment": "",
   "ensembleDefaults": {
@@ -743,194 +743,194 @@
   ],
   "services": [
     {
-      "id": "brain",
-      "name": "heady-brain",
-      "role": "inference",
+      "id": "heady-manager",
+      "name": "heady-manager",
+      "role": "api-gateway",
       "critical": true,
-      "endpoint": "/api/brain/health",
+      "endpoint": "http://localhost:3301",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 14,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
+      "lastScanLatencyMs": 4,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
     },
     {
-      "id": "soul",
-      "name": "heady-soul",
-      "role": "reflection",
+      "id": "hcfp-auto-success",
+      "name": "hcfp-auto-success",
+      "role": "background-pipeline",
       "critical": true,
-      "endpoint": "/api/soul/health",
+      "endpoint": "/",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 6,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "lens-feeder",
+      "name": "lens-feeder",
+      "role": "telemetry-feeder",
+      "critical": false,
+      "endpoint": "/",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 3,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
     },
     {
-      "id": "conductor",
-      "name": "heady-conductor",
-      "role": "orchestration",
-      "critical": true,
-      "endpoint": "/api/conductor/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "battle",
-      "name": "heady-battle",
-      "role": "competition",
+      "id": "headybuddy",
+      "name": "site-headybuddy",
+      "role": "web-frontend",
       "critical": false,
-      "endpoint": "/api/battle/health",
+      "endpoint": "http://localhost:9000",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 4,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headysystems",
+      "name": "site-headysystems",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9001",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 3,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headyconnection",
+      "name": "site-headyconnection",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9002",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 3,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headymcp",
+      "name": "site-headymcp",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9003",
       "lastScanHealthy": true,
       "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
     },
     {
-      "id": "hcfp",
-      "name": "heady-hcfp",
-      "role": "pipeline",
+      "id": "headyio",
+      "name": "site-headyio",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9004",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 7,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headyme",
+      "name": "site-headyme",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9005",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 8,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headybuddy-org",
+      "name": "site-headybuddy-org",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9010",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 7,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headyconnection-org",
+      "name": "site-headyconnection-org",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9011",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 1,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headymcp-com",
+      "name": "site-headymcp-com",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9012",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 5,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headyme-com",
+      "name": "site-headyme-com",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9013",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 5,
+      "lastScannedAt": "2026-02-24T19:34:06.548Z"
+    },
+    {
+      "id": "headysystems-com",
+      "name": "site-headysystems-com",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9014",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 4,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
+    },
+    {
+      "id": "instant",
+      "name": "site-instant",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9015",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 6,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
+    },
+    {
+      "id": "1ime1",
+      "name": "site-1ime1",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:9016",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 6,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
+    },
+    {
+      "id": "headyweb",
+      "name": "site-headyweb",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:3000",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 7,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
+    },
+    {
+      "id": "admin-ui",
+      "name": "site-admin-ui",
+      "role": "web-frontend",
+      "critical": false,
+      "endpoint": "http://localhost:5173",
+      "lastScanHealthy": true,
+      "lastScanLatencyMs": 3,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
+    },
+    {
+      "id": "heady-memory-edge",
+      "name": "heady-edge-node",
+      "role": "vector-memory-edge",
       "critical": true,
-      "endpoint": "/api/hcfp/health",
+      "endpoint": "https://heady-edge-node.emailheadyconnection.workers.dev",
       "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "patterns",
-      "name": "heady-patterns",
-      "role": "resilience",
-      "critical": true,
-      "endpoint": "/api/patterns/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "lens",
-      "name": "heady-lens",
-      "role": "differentials",
-      "critical": false,
-      "endpoint": "/api/lens/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "vinci",
-      "name": "heady-vinci",
-      "role": "creative",
-      "critical": false,
-      "endpoint": "/api/vinci/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "notion",
-      "name": "heady-notion",
-      "role": "knowledge",
-      "critical": false,
-      "endpoint": "/api/notion/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "ops",
-      "name": "heady-ops",
-      "role": "operations",
-      "critical": true,
-      "endpoint": "/api/ops/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "maintenance",
-      "name": "heady-maintenance",
-      "role": "housekeeping",
-      "critical": true,
-      "endpoint": "/api/maintenance/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "registry",
-      "name": "heady-registry",
-      "role": "catalog",
-      "critical": true,
-      "endpoint": "/api/registry",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "auto-success",
-      "name": "heady-auto-success",
-      "role": "background-tasks",
-      "critical": true,
-      "endpoint": "/api/auto-success/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "stream",
-      "name": "heady-stream",
-      "role": "real-time",
-      "critical": false,
-      "endpoint": "/api/stream/clients",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "cloud",
-      "name": "heady-cloud",
-      "role": "cloud-connector",
-      "critical": true,
-      "endpoint": "/api/cloud/status",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "memory",
-      "name": "heady-memory",
-      "role": "context-store",
-      "critical": false,
-      "endpoint": "/api/memory/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "config",
-      "name": "heady-config",
-      "role": "configuration",
-      "critical": false,
-      "endpoint": "/api/config/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "system",
-      "name": "heady-system",
-      "role": "system-info",
-      "critical": false,
-      "endpoint": "/api/system/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 2,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
-    },
-    {
-      "id": "nodes",
-      "name": "heady-nodes",
-      "role": "ai-node-registry",
-      "critical": false,
-      "endpoint": "/api/nodes/health",
-      "lastScanHealthy": true,
-      "lastScanLatencyMs": 1,
-      "lastScannedAt": "2026-02-24T07:52:52.425Z"
+      "lastScanLatencyMs": 12,
+      "lastScannedAt": "2026-02-24T19:34:06.549Z"
     }
   ],
   "cloudProviders": {
@@ -1022,5 +1022,5 @@
     }
   },
   "overallSystemScore": 0.54,
-  "lastDeepScan": "2026-02-24T07:52:52.425Z"
+  "lastDeepScan": "2026-02-24T16:45:13.809Z"
 }
