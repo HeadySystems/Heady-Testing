@@ -192,24 +192,34 @@ Spread across `configs/` — YAML, JSON, and JS covering AI routing, domain arch
 
 | Layer | Technology |
 |-------|-----------|
-| Compute | Bossgame P6 (Ryzen 9 6900HX, 8C/16T, 32GB LPDDR5, 1TB NVMe) |
-| Tunnel | Cloudflare Tunnel "heady-nexus" |
-| PaaS | Coolify on Bossgame |
+| Compute | Bosgame P6 (Ryzen 9 6900HX, 8C/16T, 32GB LPDDR5, 1TB NVMe) |
+| Process Manager | PM2 (18 processes, 32GB available, 64M per site) |
+| Tunnel | Cloudflare Tunnel "heady-nexus" → all custom domains |
+| Edge Node | Cloudflare Worker `heady-edge-node` (Hono framework, deployed live) |
+| Edge AI | Cloudflare Workers AI (BAAI bge-large-en-v1.5 embeddings) |
+| Edge Vector DB | Cloudflare Vectorize `heady-memory-idx` |
+| Edge KV Cache | Cloudflare KV `HEADY_KV_CACHE` (manager health caching) |
+| Static Sites | Cloudflare Pages (GitHub auto-deploy, 7+ domains) |
+| CDN / Security | Cloudflare Pro (WAF, Polish, Mirage, Bot Fight Mode) |
+| PaaS | Coolify on Bosgame |
 | Local Inference | Ollama (Llama 3.1 8B, CodeLlama 13B, Mistral 7B, nomic-embed-text) |
-| Static Sites | Cloudflare Pages (GitHub auto-deploy) |
-| CDN | Cloudflare Pro (WAF, Workers, Polish, Mirage) |
-| Process Manager | PM2 (18 processes, 32GB RAM available, 64M per site) |
+| MCP Server | `heady-mcp-server.js` (47KB) — 40+ tools exposed to IDE agents |
+| Cross-Device Sync | Syncthing (Bosgame ↔ mobile ↔ laptop) |
+| Knowledge Sync | Notion API (11 organized pages, automated vault sync) |
+| Version Control | GitHub (`HeadyMe/Heady-8f71ffc8`, main/staging/development) |
 
 ### AI Subscriptions
 
 | Service | Tier | Key Capability |
 |---------|------|---------------|
-| Claude Code | Enterprise | Agent teams, 1M context, 128K output |
+| Anthropic | Claude Code Enterprise | Agent teams, 1M context, 128K output |
 | OpenAI | Pro ($200/mo) | Unlimited GPT-4o, o1 pro mode |
 | Google AI | Ultra | Gemini Ultra, multimodal, 2TB storage |
 | GitHub | Enterprise | Copilot Enterprise, Advanced Security |
+| Perplexity | Pro | Sonar Pro deep research, real-time web |
 | Colab Pro+ | ×2 accounts | GPU training (A100), 1000 CU total |
-| Cloudflare | Pro (headysystems.com) | WAF, CDN, Pages, Tunnel, Workers |
+| Cloudflare | Pro (headysystems.com) | WAF, CDN, Pages, Tunnel, Workers, Vectorize |
+| Notion | Team | Knowledge vault, 11 cross-linked pages |
 
 ---
 
