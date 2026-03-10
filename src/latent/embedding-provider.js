@@ -246,7 +246,7 @@ class EmbeddingProvider {
    * @param {Object} [options]
    * @param {Object} [options.cloudflare] - Cloudflare config { accountId, apiToken, model }.
    * @param {Object} [options.openai] - OpenAI config { apiKey, model, dimensions }.
-   * @param {number} [options.cacheSize=2048] - LRU cache capacity.
+   * @param {number} [options.cacheSize=2584] - LRU cache capacity (fib(18)).
    * @param {number} [options.retries=2] - Retry attempts per backend.
    * @param {number} [options.retryDelayMs=250] - Delay between retries (ms).
    * @param {string[]} [options.backendOrder] - Ordered backend names to try.

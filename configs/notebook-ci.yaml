@@ -24,7 +24,7 @@ version: "1.0.0"
 validation:
   enabled: true
   failOnError: true
-  timeout: 120  # seconds per notebook
+  timeout: 144  # fib(12) = 144 seconds per notebook
 
   # Notebooks to validate in CI
   notebooks:

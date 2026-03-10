@@ -215,7 +215,7 @@ policies:
     on_push: true
     on_merge: true
     max_parallel: 3
-    verification_timeout: 300
+    verification_timeout: 233            # fib(13) = 233
 
   production_gate:
     threshold: 100

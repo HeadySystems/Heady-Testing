@@ -76,7 +76,7 @@ targets:
 # Deployment policies
 policies:
   max_parallel: 3
-  verification_timeout: 300
+  verification_timeout: 233              # fib(13) = 233
   retry_count: 2
   required_success_rate: 1.0  # 100% for production
   api.headysystems.com_allowed: false

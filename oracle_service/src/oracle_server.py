@@ -143,7 +143,6 @@ class HeadyOracle:
     
     def _verify_signature(self, payload: Dict) -> bool:
         """Verify cryptographic signature of sensor data"""
-<<<<<<< HEAD
         import hmac
         import hashlib
 
@@ -160,15 +159,6 @@ class HeadyOracle:
     async def _analyze_with_brain(self, field_id: str, payload: Dict):
         """Send data to HeadyBrain for analysis"""
         import httpx
-=======
-        # TODO: Implement actual cryptographic verification
-        # For now, check required fields
-        required_fields = ['timestamp', 'sensor_id', 'signature', 'data']
-        return all(field in payload for field in required_fields)
-    
-    async def _analyze_with_brain(self, field_id: str, payload: Dict):
-        """Send data to HeadyBrain for analysis"""
->>>>>>> f1ab914a56ebb387b9669c4d2f46e3c53f393edd
         try:
             analysis_payload = {
                 'type': 'FIELD_DATA_ANALYSIS',
@@ -178,7 +168,6 @@ class HeadyOracle:
                 'verification_threshold': self.verification_threshold
             }
             
-<<<<<<< HEAD
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     self.brain_endpoint,
@@ -186,11 +175,6 @@ class HeadyOracle:
                     timeout=4.236 # φ-scaled timeout
                 )
                 response.raise_for_status()
-=======
-            # TODO: Implement actual HeadyBrain API call
-            # For now, simulate analysis
-            await asyncio.sleep(0.1)  # Simulate network latency
->>>>>>> f1ab914a56ebb387b9669c4d2f46e3c53f393edd
             
             # Store verified data
             await self._store_field_data(field_id, payload)
