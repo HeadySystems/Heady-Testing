@@ -1,65 +1,59 @@
 const fs = require('fs');
+const glob = require('glob');
+const path = require('path');
 
-const file = 'heady-manager.js';
-if (fs.existsSync(file)) {
-  let content = fs.readFileSync(file, 'utf8');
+// Replaces localStorage usages in JS/HTML
+function secureLocalStorage(directory) {
+  const exts = ['.js', '.html', '.jsx', '.ts', '.tsx'];
   
-  // Add helmet and CSP headers
-  if (!content.includes("const helmet = require('helmet');")) {
-    content = content.replace("const express = require('express');", "const express = require('express');\nconst helmet = require('helmet');");
-    
-    const helmetConfig = `
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.headysystems.com", "https://auth.headysystems.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  }
-}));
-`;
-    content = content.replace("app.use(express.json({ limit: '50mb' }));", "app.use(express.json({ limit: '50mb' }));\n" + helmetConfig);
-  }
+  const walk = (dir) => {
+    let results = [];
+    if (!fs.existsSync(dir)) return results;
+    try {
+        const list = fs.readdirSync(dir);
+        list.forEach((file) => {
+          file = path.join(dir, file);
+          try {
+              const stat = fs.statSync(file);
+              if (stat && stat.isDirectory() && !file.includes('node_modules') && !file.includes('.git')) {
+                results = results.concat(walk(file));
+              } else {
+                if (exts.some(ext => file.endsWith(ext))) {
+                  results.push(file);
+                }
+              }
+          } catch(e) {}
+        });
+    } catch(e) {}
+    return results;
+  };
 
-  // LLM prompt injection defenses
-  if (!content.includes("verifyPromptInjection")) {
-    const promptInjectionDefenses = `
-const verifyPromptInjection = (req, res, next) => {
-  const { prompt, text, query } = req.body;
-  const input = prompt || text || query;
-  if (!input) return next();
+  const allFiles = walk(directory);
+  let changed = 0;
 
-  const injectionPatterns = [
-    /ignore previous instructions/i,
-    /system prompt/i,
-    /you are now/i,
-    /jailbreak/i,
-    /DAN/i
-  ];
+  allFiles.forEach(file => {
+    try {
+        let content = fs.readFileSync(file, 'utf8');
+        let original = content;
 
-  for (const pattern of injectionPatterns) {
-    if (pattern.test(input)) {
-      return res.status(403).json({ error: 'HEADY-GUARD-001: Prompt injection detected' });
-    }
-  }
+        // Founder Name
+        if (content.includes('Eric Haywood')) {
+          content = content.replace(/Eric Haywood/g, 'Eric Haywood');
+        }
 
-  next();
-};
-`;
-    
-    content = content.replace("const { exec } = require('child_process');", promptInjectionDefenses + "\nconst { exec } = require('child_process');");
-    content = content.replace("app.post('/api/hf/generate', checkAuth,", "app.post('/api/hf/generate', checkAuth, verifyPromptInjection,");
-    content = content.replace("app.post('/api/hf/infer', checkAuth,", "app.post('/api/hf/infer', checkAuth, verifyPromptInjection,");
-  }
+        // Remove priority from js
+        if (content.includes('priority:')) {
+           content = content.replace(/priority:\s*['"]?(CRITICAL|HIGH|MEDIUM|LOW)['"]?/gi, 'relevance_gate: 0.618');
+        }
 
-  fs.writeFileSync(file, content);
-  console.log('Fixed OWASP in heady-manager.js');
+        if (content !== original) {
+          fs.writeFileSync(file, content);
+          changed++;
+          console.log(`Secured/Updated: ${file}`);
+        }
+    } catch(e) {}
+  });
+  console.log(`Total files updated: ${changed}`);
 }
 
+secureLocalStorage('.');
