@@ -30,6 +30,7 @@
  */
 
 const { ClaudeCodeAgent } = require("./claude-code-agent");
+const universalPrompt = require("./universal-agent-prompt");
 
 // ─── GENERIC AGENT BASE ──────────────────────────────────────────────────
 
@@ -211,4 +212,5 @@ module.exports = {
   AuditorAgent,
   ObserverAgent,
   BaseAgent,
+  universalPrompt,
 };
