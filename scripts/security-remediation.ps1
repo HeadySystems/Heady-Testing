@@ -21,6 +21,7 @@ if ($DryRun) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # ─── Phase 1: Replace hardcoded passwords in docker-compose files ───────────
 
 $replacements = @(
@@ -30,12 +31,17 @@ $replacements = @(
 
 $replacements = @(
 =======
+=======
+>>>>>>> staging/fix-security-and-yaml-deps-9294985698471946789
 # ─── Phase 1: Replace hardcoded passwords and localhost references ───────────
 
 $replacements = @(
     # Docker compose passwords
+<<<<<<< HEAD
 >>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 >>>>>>> f1ab914a56ebb387b9669c4d2f46e3c53f393edd
+=======
+>>>>>>> staging/fix-security-and-yaml-deps-9294985698471946789
     @{ File = "docker-compose.full.yml"; Old = "POSTGRES_PASSWORD=heady_secret"; New = 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}' },
     @{ File = "docker-compose.full.yml"; Old = "PGADMIN_DEFAULT_PASSWORD=heady_admin"; New = 'PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}' },
     @{ File = "docker-compose.full.yml"; Old = "GF_SECURITY_ADMIN_PASSWORD=heady_grafana"; New = 'GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}' },
@@ -44,6 +50,7 @@ $replacements = @(
     @{ File = "distribution/docker/base/docker-compose.base.yml"; Old = 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-heady123}'; New = 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD}' },
     @{ File = "distribution/docker/profiles/dev-tools.yml"; Old = 'PASSWORD=${HEADY_IDE_PASSWORD:-heady}'; New = 'PASSWORD=${HEADY_IDE_PASSWORD}' },
     @{ File = "distribution/docker/profiles/hybrid.yml"; Old = 'DRUPAL_DATABASE_PASSWORD=${POSTGRES_PASSWORD:-heady_dev}'; New = 'DRUPAL_DATABASE_PASSWORD=${POSTGRES_PASSWORD}' },
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
@@ -55,6 +62,8 @@ Write-Host "Phase 1: Replacing hardcoded passwords in docker-compose files..." -
 <<<<<<< HEAD
 =======
 =======
+=======
+>>>>>>> staging/fix-security-and-yaml-deps-9294985698471946789
     @{ File = "distribution/docker/profiles/full-suite.yml"; Old = 'PASSWORD=${HEADY_IDE_PASSWORD:-heady}'; New = 'PASSWORD=${HEADY_IDE_PASSWORD}' },
     
     # Localhost to cloud references (CLOUD_ONLY mode)
@@ -69,8 +78,11 @@ Write-Host "Phase 1: Replacing hardcoded passwords in docker-compose files..." -
 )
 
 Write-Host "Phase 1: Replacing hardcoded passwords and localhost references..." -ForegroundColor Green
+<<<<<<< HEAD
 >>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 >>>>>>> f1ab914a56ebb387b9669c4d2f46e3c53f393edd
+=======
+>>>>>>> staging/fix-security-and-yaml-deps-9294985698471946789
 $fixCount = 0
 
 foreach ($r in $replacements) {
