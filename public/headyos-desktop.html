@@ -670,6 +670,27 @@
     </div>
 
     <script>
+        // ─── Cloud Runtime Auto-Detect ─────────────────────────────────
+        const HEADY_CLOUD_URLS = [
+            window.location.origin + '/api',
+            'https://heady-manager-headyme.headysystems.com/api',
+            'https://heady-manager-headysystems.headysystems.com/api',
+            'https://heady-manager-headyconnection.headysystems.com/api',
+        ];
+        let HEADY_API = HEADY_CLOUD_URLS[0];
+        let _apiResolved = false;
+
+        async function resolveApi() {
+            if (_apiResolved) return HEADY_API;
+            for (const url of HEADY_CLOUD_URLS) {
+                try {
+                    const r = await fetch(url + '/health', { signal: AbortSignal.timeout(3000) });
+                    if (r.ok) { HEADY_API = url; _apiResolved = true; return url; }
+                } catch(e) { /* try next */ }
+            }
+            return HEADY_API;
+        }
+
         function toggleSidePanel() {
             const panel = document.getElementById('side-panel');
             const orb = document.getElementById('heady-orb-container');
@@ -687,21 +708,30 @@
             });
         }
 
-        function sendMessage() {
+        async function sendMessage() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
-            if (message) {
-                const messages = document.getElementById('chat-messages');
-                messages.innerHTML += `<div class="message user">${message}</div>`;
-                input.value = '';
-                messages.scrollTop = messages.scrollHeight;
-                
-                // Simulate response
-                setTimeout(() => {
-                    messages.innerHTML += `<div class="message assistant">I'm processing your request about "${message}"...</div>`;
-                    messages.scrollTop = messages.scrollHeight;
-                }, 1000);
+            if (!message) return;
+
+            const messages = document.getElementById('chat-messages');
+            messages.innerHTML += `<div class="message user">${message}</div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            await resolveApi();
+
+            try {
+                const response = await fetch(`${HEADY_API}/buddy/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, history: [] })
+                });
+                const data = await response.json();
+                messages.innerHTML += `<div class="message assistant">${data.reply || data.message || "I'm here to help!"}</div>`;
+            } catch(error) {
+                messages.innerHTML += `<div class="message assistant">Connection issue: ${error.message}. Retrying...</div>`;
             }
+            messages.scrollTop = messages.scrollHeight;
         }
 
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
@@ -718,6 +748,15 @@
                 e.preventDefault();
                 startVoice();
             }
+        });
+
+        // Connect on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await resolveApi();
+            try {
+                const r = await fetch(`${HEADY_API}/health`);
+                if (r.ok) console.log('HeadyOS Desktop connected to', HEADY_API);
+            } catch(e) { console.warn('HeadyOS Desktop: API offline'); }
         });
     </script>
 </body>

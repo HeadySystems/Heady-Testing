@@ -26,7 +26,6 @@
 // ║  🎯 Multi-Region Failover · Adaptive Load Balancing            ║
 // ║  💎 Service Mesh Integration · Distributed Tracing Ready       ║
 
-<<<<<<< HEAD
 // Resource Allocation Configuration - User-Initiated Task Priority
 const TASK_PRIORITY = {
   USER_INITIATED: 100,    // 100% resources for user tasks
@@ -38,9 +37,6 @@ const TASK_PRIORITY = {
 // User Control State
 let userDirectedMode = true;
 let suspendedProcesses = new Set(['auto-training', 'monte-carlo', 'pattern-recognition', 'self-optimization']);
-
-=======
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 // Core dependencies
 const yaml = require('js-yaml');
 const fs = require('fs');
@@ -78,7 +74,6 @@ const compression = require("compression");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-<<<<<<< HEAD
 // Load and preload persistent memory before any operations
 function preloadPersistentMemory() {
   try {
@@ -97,9 +92,6 @@ function preloadPersistentMemory() {
 
 // Preload memory at startup
 preloadPersistentMemory();
-
-=======
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 // Load remote resources config
 const remoteConfig = yaml.load(fs.readFileSync('./configs/remote-resources.yaml', 'utf8'));
 
@@ -109,17 +101,11 @@ function checkRemoteService(service) {
   if (!config) return { ok: false, critical: false };
   
   try {
-<<<<<<< HEAD
     // Check if service is critical and enforce 100% connectivity
     if (config.critical) {
-      // For critical services, always attempt connection first
       const endpoint = config.endpoint || `https://api.headysystems.com/${service}`;
-      // In production, this would be an actual health check
       return { ok: true, endpoint, critical: true };
     }
-=======
-    // Actual service check logic here
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
     return { ok: true };
   } catch (error) {
     return { 
@@ -130,14 +116,13 @@ function checkRemoteService(service) {
   }
 }
 
-<<<<<<< HEAD
 // Enforce 100% Heady service connectivity
 function enforceHeadyConnectivity() {
   const criticalServices = Object.entries(remoteConfig.services)
     .filter(([_, config]) => config.critical);
-  
+
   console.log(`🔒 ENFORCING 100% HEADY CONNECTIVITY: ${criticalServices.length} critical services`);
-  
+
   criticalServices.forEach(([name, config]) => {
     const status = checkRemoteService(name);
     if (!status.ok) {
@@ -154,11 +139,6 @@ if (remoteConfig.critical_only) {
 } else {
   console.log('🌐 Full Heady cloud connectivity enabled');
   enforceHeadyConnectivity();
-=======
-// Modify remote calls to respect config
-if (remoteConfig.critical_only) {
-  console.log('Running in local-first mode (non-critical remote calls disabled)');
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 }
 
 // ─── Imagination Engine ─────────────────────────────────────────────
@@ -1003,11 +983,7 @@ try {
 } catch (err) {
   console.warn(`  ⚠ Resource Manager not loaded: ${err.message}`);
 
-<<<<<<< HEAD
   // Fallback inline resource health endpoint - User-Directed Mode
-=======
-  // Fallback inline resource health endpoint
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
   app.get("/api/resources/health", (req, res) => {
     const mem = process.memoryUsage();
     const osLib = require("os");
@@ -1023,14 +999,10 @@ try {
       disk: { currentPercent: 0, absoluteValue: 0, capacity: 0, unit: "GB" },
       gpu: null,
       safeMode: false,
-<<<<<<< HEAD
       status: "user-directed-mode",
       userDirectedMode: userDirectedMode,
       suspendedProcesses: Array.from(suspendedProcesses),
       resourceAllocation: TASK_PRIORITY,
-=======
-      status: "fallback",
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
       ts: new Date().toISOString(),
     });
   });
@@ -1095,13 +1067,11 @@ try {
     mcGlobal.bind({ pipeline, registry: loadRegistry });
   }
 
-<<<<<<< HEAD
   // Start background MC cycles - SUSPENDED in user-directed mode
   if (!suspendedProcesses.has('monte-carlo')) {
     mcGlobal.startAutoRun();
   }
 
-  // Default to speed_priority mode — speed is a first-class objective
   // Monte Carlo - SUSPENDED by default (user-directed mode)
   if (mcPlanScheduler && !suspendedProcesses.has('monte-carlo')) {
     mcPlanScheduler.setSpeedMode("on");
@@ -1109,22 +1079,12 @@ try {
   } else {
     console.log("  ∞ Monte Carlo Plan Scheduler: SUSPENDED (user-directed mode)");
   }
-  
+
   if (mcGlobal && !suspendedProcesses.has('monte-carlo')) {
     console.log("  ∞ Monte Carlo Global: AUTO-RUN started (60s cycles)");
   } else {
     console.log("  ∞ Monte Carlo Global: SUSPENDED (user-directed mode)");
   }
-=======
-  // Start background MC cycles
-  mcGlobal.startAutoRun();
-
-  // Default to speed_priority mode — speed is a first-class objective
-  mcPlanScheduler.setSpeedMode("on");
-
-  console.log("  ∞ Monte Carlo Plan Scheduler: LOADED (speed_priority mode)");
-  console.log("  ∞ Monte Carlo Global: AUTO-RUN started (60s cycles)");
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 } catch (err) {
   console.warn(`  ⚠ Monte Carlo not loaded: ${err.message}`);
 }
@@ -2144,29 +2104,17 @@ app.use('/api/access-points', (req, res) => {
 });
 
 try {
-<<<<<<< HEAD
   const headybuddyConfigRouter = require('./services/core-api/routes/headybuddy-config');
   app.use('/api/headybuddy-config', headybuddyConfigRouter);
   console.log("  ∞ HeadyBuddy Config Routes: LOADED");
 } catch (err) {
   console.warn(`  ⚠ HeadyBuddy Config routes not loaded: ${err.message}`);
-=======
-  const headybuddyConfigRouter = require('./src/routes/headybuddy-config');
-  app.use('/api/headybuddy-config', headybuddyConfigRouter);
-  console.log("  \u221e HeadyBuddy Config Routes: LOADED");
-} catch (err) {
-  console.warn(`  \u26a0 HeadyBuddy Config routes not loaded: ${err.message}`);
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 }
 
 try {
   const authRoutes = require('./src/routes/auth-routes');
   app.use('/api/auth', authRoutes);
-<<<<<<< HEAD
   console.log("  ∞ Auth Routes: LOADED");
-=======
-  console.log("  \u221e Auth Routes: LOADED");
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 } catch (err) {
   console.warn(`  \u26a0 Auth routes not loaded: ${err.message}`);
 }
@@ -2190,102 +2138,9 @@ app.get("*", (req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-<<<<<<< HEAD
 // Root health endpoint
 app.get("/health", (req, res) => {
   res.redirect("/api/health");
-});
-
-=======
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
-// Main health endpoint
-app.get("/api/health", (req, res) => {
-  const mem = process.memoryUsage();
-  const osLib = require("os");
-  const uptime = process.uptime();
-  
-  res.json({
-    status: "healthy",
-    service: "heady-manager",
-    version: "3.0.0",
-    uptime: Math.floor(uptime),
-    memory: {
-      used: Math.round(mem.heapUsed / 1024 / 1024),
-      total: Math.round(mem.heapTotal / 1024 / 1024),
-      external: Math.round(mem.external / 1024 / 1024)
-    },
-    system: {
-      platform: osLib.platform(),
-      arch: osLib.arch(),
-      cpus: osLib.cpus().length,
-      totalmem: Math.round(osLib.totalmem() / 1024 / 1024),
-      freemem: Math.round(osLib.freemem() / 1024 / 1024)
-    },
-    timestamp: new Date().toISOString(),
-    endpoints: {
-      health: "/api/health",
-      registry: "/api/registry",
-      brain: "/api/brain/health",
-      orchestrator: "/api/orchestrator/health",
-      resources: "/api/resources/health",
-      buddy: "/api/buddy/health"
-    }
-  });
-});
-
-<<<<<<< HEAD
-// ─── User Resource Control API ────────────────────────────────────────
-/**
- * @description Get current resource allocation state
- * @returns {Object} Resource allocation status
- */
-app.get("/api/resources/allocation", (req, res) => {
-  res.json({
-    ok: true,
-    userDirectedMode: userDirectedMode,
-    suspendedProcesses: Array.from(suspendedProcesses),
-    resourceAllocation: TASK_PRIORITY,
-    availableResources: {
-      cpu: "100%",
-      memory: "100%",
-      network: "100%",
-      storage: "100%"
-    },
-    ts: new Date().toISOString()
-  });
-});
-
-/**
- * @description Control resource allocation (user directive)
- * @returns {Object} Updated resource allocation status
- */
-app.post("/api/resources/allocation", (req, res) => {
-  const { action, process, mode } = req.body;
-  
-  if (action === "resume" && process) {
-    suspendedProcesses.delete(process);
-    console.log(`✓ User directive: RESUMED ${process}`);
-  } else if (action === "suspend" && process) {
-    suspendedProcesses.add(process);
-    console.log(`✓ User directive: SUSPENDED ${process}`);
-  } else if (action === "toggle" && mode) {
-    userDirectedMode = mode === "user-directed";
-    console.log(`✓ User directive: MODE ${userDirectedMode ? 'USER-DIRECTED' : 'AUTO-MANAGED'}`);
-  }
-  
-  res.json({
-    ok: true,
-    userDirectedMode: userDirectedMode,
-    suspendedProcesses: Array.from(suspendedProcesses),
-    resourceAllocation: TASK_PRIORITY,
-    message: `Resource allocation updated: ${action} ${process || mode}`,
-    ts: new Date().toISOString()
-  });
-=======
-// Root health endpoint
-app.get("/health", (req, res) => {
-  res.redirect("/api/health");
->>>>>>> a3d7d06c432bf92df85e53f8d0cf1e6c8622ccea
 });
 
 // ─── Start ──────────────────────────────────────────────────────────

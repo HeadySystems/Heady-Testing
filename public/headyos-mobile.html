@@ -725,6 +725,27 @@
     </nav>
 
     <script>
+        // ─── Cloud Runtime Auto-Detect ─────────────────────────────────
+        const HEADY_CLOUD_URLS = [
+            window.location.origin + '/api',
+            'https://heady-manager-headyme.headysystems.com/api',
+            'https://heady-manager-headysystems.headysystems.com/api',
+            'https://heady-manager-headyconnection.headysystems.com/api',
+        ];
+        let HEADY_API = HEADY_CLOUD_URLS[0];
+        let _apiResolved = false;
+
+        async function resolveApi() {
+            if (_apiResolved) return HEADY_API;
+            for (const url of HEADY_CLOUD_URLS) {
+                try {
+                    const r = await fetch(url + '/health', { signal: AbortSignal.timeout(3000) });
+                    if (r.ok) { HEADY_API = url; _apiResolved = true; return url; }
+                } catch(e) { /* try next */ }
+            }
+            return HEADY_API;
+        }
+
         // Clock
         function updateClock() {
             const now = new Date();
@@ -760,8 +781,8 @@
             document.getElementById('chatSheet').classList.remove('open');
         }
 
-        // Send Message
-        function sendMessage() {
+        // Send Message - connected to cloud runtime
+        async function sendMessage() {
             const input = document.getElementById('textInput');
             const text = input.value.trim();
             if (!text) return;
@@ -769,13 +790,23 @@
             addMessage(text, 'user');
             input.value = '';
 
-            // Show typing
             document.getElementById('typingIndicator').classList.add('active');
 
-            setTimeout(() => {
+            await resolveApi();
+
+            try {
+                const response = await fetch(`${HEADY_API}/buddy/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, history: [] })
+                });
+                const data = await response.json();
                 document.getElementById('typingIndicator').classList.remove('active');
-                addMessage('I understand your request. Processing with sacred precision...', 'assistant');
-            }, 1500);
+                addMessage(data.reply || data.message || "I'm here to help!", 'assistant');
+            } catch(error) {
+                document.getElementById('typingIndicator').classList.remove('active');
+                addMessage(`Connection issue: ${error.message}`, 'assistant');
+            }
         }
 
         function addMessage(text, type) {
@@ -795,15 +826,26 @@
             document.getElementById('voiceOverlay').classList.remove('active');
         }
 
-        // Quick pills
+        // Quick pills - connected to cloud runtime
         document.querySelectorAll('.quick-pill').forEach(pill => {
-            pill.addEventListener('click', () => {
-                addMessage(pill.textContent, 'user');
+            pill.addEventListener('click', async () => {
+                const text = pill.textContent;
+                addMessage(text, 'user');
                 document.getElementById('typingIndicator').classList.add('active');
-                setTimeout(() => {
+                await resolveApi();
+                try {
+                    const r = await fetch(`${HEADY_API}/buddy/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text, history: [] })
+                    });
+                    const data = await r.json();
                     document.getElementById('typingIndicator').classList.remove('active');
-                    addMessage(`Executing ${pill.textContent.toLowerCase()}...`, 'assistant');
-                }, 1000);
+                    addMessage(data.reply || data.message || "Done!", 'assistant');
+                } catch(e) {
+                    document.getElementById('typingIndicator').classList.remove('active');
+                    addMessage(`Connection issue: ${e.message}`, 'assistant');
+                }
             });
         });
 

@@ -194,7 +194,26 @@
 
     <script>
         let isExpanded = true;
-        const HEADY_API = "https://headysystems.com/api";
+        // Auto-detect runtime: same-origin on Render, or known cloud URLs
+        const HEADY_CLOUD_URLS = [
+            window.location.origin + '/api',
+            'https://heady-manager-headyme.headysystems.com/api',
+            'https://heady-manager-headysystems.headysystems.com/api',
+            'https://heady-manager-headyconnection.headysystems.com/api',
+        ];
+        let HEADY_API = HEADY_CLOUD_URLS[0];
+        let _apiResolved = false;
+
+        async function resolveApi() {
+            if (_apiResolved) return HEADY_API;
+            for (const url of HEADY_CLOUD_URLS) {
+                try {
+                    const r = await fetch(url + '/health', { signal: AbortSignal.timeout(3000) });
+                    if (r.ok) { HEADY_API = url; _apiResolved = true; return url; }
+                } catch(e) { /* try next */ }
+            }
+            return HEADY_API;
+        }
 
         function toggleHeadyBuddy() {
             const widget = document.getElementById('headybuddy-widget');
@@ -261,22 +280,20 @@
         }
 
         // Initialize HeadyBuddy
-        document.addEventListener('DOMContentLoaded', function() {
-            updateStatus('online', 'Connected to HeadyMe Cloud');
-            
-            // Test connection
-            fetch(`${HEADY_API}/health`)
-                .then(response => {
-                    if (response.ok) {
-                        updateStatus('online', 'Connected to HeadyMe Cloud');
-                    } else {
-                        throw new Error('Service unavailable');
-                    }
-                })
-                .catch(error => {
-                    updateStatus('offline', 'Connection error');
-                    console.error('HeadyBuddy connection failed:', error);
-                });
+        document.addEventListener('DOMContentLoaded', async function() {
+            updateStatus('thinking', 'Connecting...');
+            await resolveApi();
+            try {
+                const response = await fetch(`${HEADY_API}/health`);
+                if (response.ok) {
+                    updateStatus('online', 'Connected to HeadyMe Cloud');
+                } else {
+                    throw new Error('Service unavailable');
+                }
+            } catch(error) {
+                updateStatus('offline', 'Connection error');
+                console.error('HeadyBuddy connection failed:', error);
+            }
         });
     </script>
 </body>
