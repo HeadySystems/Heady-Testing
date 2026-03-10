@@ -188,13 +188,54 @@ const PORT = 3301;
 const app = express();
 
 // ─── Middleware ─────────────────────────────────────────────────────
-app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
+      connectSrc: ["'self'", "https://heady-manager.onrender.com", "https://heady-testing.onrender.com", "https://heady-production.onrender.com", "https://*.onrender.com"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hsts: { maxAge: 31536000, includeSubDomains: true },
+}));
 app.use(compression());
 app.use(express.json({ limit: "5mb" }));
+
+// Security: remove X-Powered-By
+app.disable('x-powered-by');
+
+// Additional security headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
+
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : "*",
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
 }));
+
+// Rate limiting — stricter for auth endpoints
+app.use("/api/auth/login", rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'too_many_requests', message: 'Too many login attempts' },
+}));
+
 app.use("/api/", rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 1000,
@@ -2150,6 +2191,59 @@ app.get('/api/vault/status', (req, res) => {
     summary[cat] = { total: keys.length, configured: set, missing: keys.length - set };
   }
   res.json({ vault: 'HeadyVault', latentSpaceKey: 'heady-vault-manifest', summary, totals: { keys: totalKeys, configured: totalSet, missing: totalKeys - totalSet }, rotationPolicy: 'quarterly', ts: new Date().toISOString() });
+});
+
+// ─── Enhanced Health & Diagnostics ──────────────────────────────────
+const serverStartTime = Date.now();
+
+app.get('/api/diagnostics', (req, res) => {
+  const memUsage = process.memoryUsage();
+  const uptime = Date.now() - serverStartTime;
+  res.json({
+    system: {
+      uptime: uptime,
+      uptimeHuman: `${Math.floor(uptime / 3600000)}h ${Math.floor((uptime % 3600000) / 60000)}m`,
+      memory: {
+        rss: `${Math.round(memUsage.rss / 1048576)}MB`,
+        heapUsed: `${Math.round(memUsage.heapUsed / 1048576)}MB`,
+        heapTotal: `${Math.round(memUsage.heapTotal / 1048576)}MB`,
+        external: `${Math.round(memUsage.external / 1048576)}MB`,
+      },
+      node: process.version,
+      platform: process.platform,
+      arch: process.arch,
+      pid: process.pid,
+      env: process.env.NODE_ENV || 'development',
+    },
+    services: {
+      pipeline: !!global.pipelineEngine,
+      brain: !!global.systemBrain,
+      imagination: !!imaginationRoutes,
+      claude: !!claudeRoutes,
+      auth: true,
+      resourceManager: !!global.resourceManager,
+    },
+    routes: {
+      total: app._router.stack.filter(r => r.route).length,
+      middleware: app._router.stack.filter(r => !r.route).length,
+    },
+    ts: new Date().toISOString(),
+  });
+});
+
+app.get('/api/readiness', (req, res) => {
+  const checks = {
+    server: true,
+    configs: fs.existsSync('./configs/hcfullpipeline.yaml'),
+    registry: fs.existsSync('./heady-registry.json'),
+    memory: process.memoryUsage().heapUsed < 500 * 1048576, // < 500MB
+  };
+  const allHealthy = Object.values(checks).every(Boolean);
+  res.status(allHealthy ? 200 : 503).json({
+    ready: allHealthy,
+    checks,
+    ts: new Date().toISOString(),
+  });
 });
 
 // ─── Error Handler ──────────────────────────────────────────────────
