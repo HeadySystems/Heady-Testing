@@ -9,12 +9,16 @@
 // ║                                                                  ║
 // ║  ∞ SACRED GEOMETRY ∞  Organic Systems · Breathing Interfaces    ║
 // ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
-// ║  FILE: websites/build.js                                                    ║
+// ║  FILE: websites/sites/headyos.com/.eleventy.js
 // ║  LAYER: root                                                  ║
 // ╚══════════════════════════════════════════════════════════════════╝
 // HEADY_BRAND:END
-// Unified build script for all websites
-const { execSync } = require('child_process');
-
-// Build each site
-execSync('npx @11ty/eleventy --config=eleventy-config.js', { stdio: 'inherit' });
+module.exports = function(eleventyConfig) {
+  // HeadyOS specific config
+  return {
+    dir: {
+      input: ".",
+      output: "_site"
+    }
+  };
+};
