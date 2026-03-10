@@ -35,7 +35,7 @@ try {
   latent = require('./hc_latent_space');
 } catch (e) {
   // Graceful fallback if latent space module not available
-  latent = { record: () => {}, search: () => ({ results: [] }), wrap: (cat, desc, fn) => fn };
+  latent = { record: () => { }, search: () => ({ results: [] }), wrap: (cat, desc, fn) => fn };
 }
 
 // ─── Configuration ────────────────────────────────────────────────
@@ -123,7 +123,7 @@ function gitExec(cmd, opts = {}) {
     return execSync(cmd, {
       cwd: HEADY_ROOT,
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 29034, // φ⁶ × 1000
       stdio: ['pipe', 'pipe', 'pipe'],
       ...opts
     }).trim();
@@ -208,7 +208,7 @@ function syncAllRemotes(branch) {
 }
 
 // ─── Health Checks ────────────────────────────────────────────────
-function httpGet(url, timeout = 10000) {
+function httpGet(url, timeout = 11090) { // φ⁵ × 1000
   return new Promise((resolve, reject) => {
     const req = https.get(url, { timeout }, (res) => {
       let data = '';

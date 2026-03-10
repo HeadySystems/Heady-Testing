@@ -268,7 +268,7 @@ class ProbeOrchestrator {
     _httpHead(url) {
         return new Promise((resolve, reject) => {
             const mod = url.startsWith('https') ? https : http;
-            const req = mod.request(url, { method: 'HEAD', timeout: 10000 }, res => resolve(res.statusCode));
+            const req = mod.request(url, { method: 'HEAD', timeout: 11090 }, res => resolve(res.statusCode)); // φ⁵ × 1000
             req.on('error', reject);
             req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
             req.end();
@@ -278,7 +278,7 @@ class ProbeOrchestrator {
     _httpGet(url) {
         return new Promise((resolve, reject) => {
             const mod = url.startsWith('https') ? https : http;
-            mod.get(url, { timeout: 15000 }, res => {
+            mod.get(url, { timeout: 17944 }, res => { // φ⁶ × 1000
                 let data = '';
                 res.on('data', chunk => data += chunk);
                 res.on('end', () => resolve(data));
@@ -289,7 +289,7 @@ class ProbeOrchestrator {
     _getHeaders(url) {
         return new Promise((resolve, reject) => {
             const mod = url.startsWith('https') ? https : http;
-            mod.get(url, { timeout: 10000 }, res => {
+            mod.get(url, { timeout: 11090 }, res => { // φ⁵ × 1000
                 resolve(res.headers);
                 res.destroy();
             }).on('error', reject);

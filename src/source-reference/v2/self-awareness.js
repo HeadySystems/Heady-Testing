@@ -60,7 +60,7 @@ let monitorState = {
 async function scanDomain(domain) {
     try {
         const resp = await fetch(`https://${domain}/`, {
-            signal: AbortSignal.timeout(10000),
+            signal: AbortSignal.timeout(11090), // φ⁵ × 1000
             headers: { 'User-Agent': 'HeadyBrandingMonitor/1.0' },
         });
         const html = await resp.text();

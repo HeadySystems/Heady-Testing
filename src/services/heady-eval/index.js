@@ -490,7 +490,7 @@ class HeadyEval extends EventEmitter {
                 catch { reject(new Error(`Invalid JSON from Heady™Guard`)); }
               });
             });
-            req.setTimeout(5000, () => { req.destroy(); reject(new Error('HeadyGuard timeout')); });
+            req.setTimeout(4236, () => { req.destroy(); reject(new Error('HeadyGuard timeout')); }); // φ³ × 1000
             req.on('error', reject);
             req.write(body);
             req.end();

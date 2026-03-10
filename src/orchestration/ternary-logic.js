@@ -97,7 +97,7 @@ class TernaryDecisionMatrix extends EventEmitter {
      */
     _extractFeatures(signal) {
         const features = {
-            confidence: 0.5,
+            confidence: 0.500, // phiThreshold(0) — MINIMUM
             novelty: 0.5,
             adversarial: false,
             verified: false,
@@ -130,7 +130,7 @@ class TernaryDecisionMatrix extends EventEmitter {
         );
         if (shadowMatch) {
             features.adversarial = true;
-            features.confidence = 0.1; // Known bad pattern
+            features.confidence = 0.146; // ψ⁴ — Known bad pattern
             features.frequency = (shadowMatch.frequency || 0) + 1;
         }
 
