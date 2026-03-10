@@ -64,7 +64,27 @@ for remote in $REMOTES; do
   if git push "$remote" "$BRANCH" 2>/dev/null; then
     echo " ✓"
   else
-    echo " ✗ (failed — will retry next cycle)"
+    # Pull-merge on reject, then retry
+    echo " (pulling remote changes first...)"
+    git config pull.rebase false 2>/dev/null
+    if git pull "$remote" "$BRANCH" --no-edit 2>/dev/null; then
+      # Auto-resolve any conflicts by accepting both
+      conflicted=$(git diff --name-only --diff-filter=U 2>/dev/null)
+      if [ -n "$conflicted" ]; then
+        for cf in $conflicted; do
+          sed -i '/^<<<<<<< HEAD$/d; /^=======$/d; /^>>>>>>> /d' "$cf"
+          git add "$cf"
+        done
+        git commit --no-edit --no-verify 2>/dev/null
+      fi
+      if git push "$remote" "$BRANCH" 2>/dev/null; then
+        echo "  ✓ ${remote} (after merge)"
+      else
+        echo "  ✗ ${remote} (failed after merge — manual fix needed)"
+      fi
+    else
+      echo "  ✗ ${remote} (pull failed — manual fix needed)"
+    fi
   fi
 done
 
