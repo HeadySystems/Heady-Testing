@@ -89,3 +89,12 @@ audit_logs.jsonl
 
 # In-folder (ingest zips - too large for GitHub)
 in/
+
+
+# Security — sensitive files (added by security-remediation)
+.env.hybrid
+*.pid
+*.bak
+audit_logs.jsonl
+.heady_deploy_log.jsonl
+*.jsonl

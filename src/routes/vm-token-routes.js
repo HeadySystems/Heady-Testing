@@ -16,7 +16,6 @@
 const express = require('express');
 const router = express.Router();
 const { createAppAuth } = require('@octokit/auth-app');
-const fetch = require('node-fetch');
 
 module.exports = (secretsManager) => {
   router.post('/token', async (req, res) => {
