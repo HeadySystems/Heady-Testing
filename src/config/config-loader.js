@@ -49,7 +49,7 @@ const DEFAULTS = {
     retry: {
       maxRetries: 3,  // fib(4) = 3
       baseDelayMs: 1_000,
-      backoffFactor: 2,
+      backoffFactor: 1.618, // φ-backoff
     },
     pool: {
       primaryRatio: 0.618,   // Golden ratio

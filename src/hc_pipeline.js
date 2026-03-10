@@ -33,7 +33,7 @@ const PIPELINE_LOG = path.join(LOGS_DIR, "hc_pipeline.log");
 const CACHE_DIR = path.join(__dirname, "..", ".heady_cache");
 const TASK_CACHE_FILE = path.join(CACHE_DIR, "pipeline_task_cache.json");
 const CACHE_TTL_MS = 3600000; // 1 hour
-const CACHE_MAX_ENTRIES = 200;
+const CACHE_MAX_ENTRIES = 233; // fib(13) = 233
 
 // ─── CONFIG LOADER ──────────────────────────────────────────────────────────
 

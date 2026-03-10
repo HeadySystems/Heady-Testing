@@ -8,7 +8,9 @@
 
 const crypto = require('crypto');
 
-const PHI = 1.6180339887;
+const PHI = 1.6180339887498948;
+const PSI = 1 / PHI; // ≈ 0.618
+const FIB = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
 
 // ─── The 17 Canonical Swarms ──────────────────────────────────────────────────
 
@@ -32,17 +34,18 @@ const SWARM_NAMES = [
   'Emergency',
 ];
 
-// CslRelevance levels: higher = more urgent
+// CSL Relevance gates — φ-derived continuous [0.0, 1.0] thresholds
+// Replaces arbitrary priority enums with mathematically-derived gates
 const CSL_RELEVANCE = {
-  EMERGENCY:  100,
-  CRITICAL:    80,
-  HIGH:        60,
-  NORMAL:      40,
-  LOW:         20,
-  BACKGROUND:  10,
+  EMERGENCY:  1.0,                    // Maximum activation
+  CRITICAL:   PSI + PSI * PSI,        // ≈ 0.854 (φ⁻¹ + φ⁻²)
+  HIGH:       PSI,                    // ≈ 0.618 (golden ratio conjugate)
+  NORMAL:     PSI * PSI,              // ≈ 0.382 (φ⁻²)
+  LOW:        PSI * PSI * PSI,        // ≈ 0.236 (φ⁻³)
+  BACKGROUND: PSI * PSI * PSI * PSI,  // ≈ 0.146 (φ⁻⁴)
 };
 
-// Default priorities per swarm
+// Default relevance per swarm — capability-routed, not priority-ranked
 const SWARM_PRIORITIES = {
   Emergency:     CSL_RELEVANCE.EMERGENCY,
   Security:      CSL_RELEVANCE.CRITICAL,

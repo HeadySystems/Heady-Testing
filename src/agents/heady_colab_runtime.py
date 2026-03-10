@@ -377,7 +377,7 @@ class RuntimeRegistry:
             resp = requests.post(
                 f"{target.tunnel_url}/task",
                 json=task,
-                timeout=30,
+                timeout=34,  # fib(9) = 34
             )
             return resp.json()
         except Exception as e:

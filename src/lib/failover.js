@@ -62,7 +62,7 @@ class MultiCloudFailover {
     }
 
     async _healthCheck(backend) {
-        const resp = await fetch(`${backend.url}/health/live`, { signal: AbortSignal.timeout(5000) });
+        const resp = await fetch(`${backend.url}/health/live`, { signal: AbortSignal.timeout(4236) }); // φ³ × 1000
         if (!resp.ok) throw new Error(`Health check failed: ${resp.status}`);
     }
 
