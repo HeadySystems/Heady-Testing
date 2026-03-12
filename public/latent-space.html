@@ -753,6 +753,27 @@
     </footer>
 
     <script>
+        // Fetch latent space status from API
+        let latentStatus = { capacity: 10000, current: 8543, entries: 80 };
+
+        async function fetchLatentSpaceStatus() {
+            try {
+                const response = await fetch('/api/latent/status', { signal: AbortSignal.timeout(5000) });
+                if (!response.ok) throw new Error('API unavailable');
+                return await response.json();
+            } catch (e) {
+                console.warn('Latent Space API unavailable, using demo data:', e.message);
+                return { capacity: 10000, current: 8543, entries: 80 };
+            }
+        }
+
+        // Initialize with API data
+        (async () => {
+            latentStatus = await fetchLatentSpaceStatus();
+            drawVectorSpace();
+            drawRingBuffer();
+        })();
+
         // Vector Space Visualization
         const vectorCanvas = document.getElementById('vectorCanvas');
         const vCtx = vectorCanvas.getContext('2d');
@@ -792,7 +813,7 @@
             };
 
             const categories = Object.keys(colors);
-            const points = 80;
+            const points = latentStatus.entries || 80;
 
             for (let i = 0; i < points; i++) {
                 const x = Math.random() * width;
@@ -823,8 +844,8 @@
             const centerY = height / 2;
             const outerRadius = 80;
             const innerRadius = 40;
-            const capacity = 10000;
-            const current = 8543;
+            const capacity = latentStatus.capacity || 10000;
+            const current = latentStatus.current || 8543;
             const segments = 60;
 
             // Draw background circle
@@ -883,9 +904,6 @@
             rCtx.textBaseline = 'middle';
             rCtx.fillText(`${Math.round((current / capacity) * 100)}%`, centerX, centerY);
         }
-
-        drawVectorSpace();
-        drawRingBuffer();
 
         window.addEventListener('resize', () => {
             drawVectorSpace();

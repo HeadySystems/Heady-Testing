@@ -782,36 +782,54 @@
     </div>
 
     <script>
-        // Animate ORS gauge needle
+        // Fetch brain status from API
+        async function fetchBrainStatus() {
+            try {
+                const response = await fetch('/api/brain/status', { signal: AbortSignal.timeout(5000) });
+                if (!response.ok) throw new Error('API unavailable');
+                return await response.json();
+            } catch (e) {
+                console.warn('Brain API unavailable, using demo data:', e.message);
+                return { ors_score: 78, subsystems: {} };
+            }
+        }
+
+        // Animate ORS gauge needle with real or demo data
         let currentORS = 0;
-        const targetORS = 78;
+        let targetORS = 78;
+
+        async function initBrainData() {
+            const brainStatus = await fetchBrainStatus();
+            targetORS = brainStatus.ors_score || 78;
+            animateNeedle();
+        }
 
         function animateNeedle() {
             if (currentORS < targetORS) {
                 currentORS += (targetORS - currentORS) * 0.02;
-                
+
                 // Calculate angle (0-180 degrees, map to SVG path)
                 const angle = (currentORS / 100) * 180;
                 const radians = (angle - 90) * Math.PI / 180;
                 const radius = 100;
                 const x = 150 + radius * Math.cos(radians);
                 const y = 150 + radius * Math.sin(radians);
-                
+
                 // Update needle
                 const needle = document.getElementById('needle');
                 needle.innerHTML = `
                     <line x1="150" y1="150" x2="${x}" y2="${y}" stroke="#FF00A0" stroke-width="3" stroke-linecap="round"/>
                     <circle cx="150" cy="150" r="5" fill="#FF00A0"/>
                 `;
-                
+
                 // Update label
                 document.getElementById('orsScore').textContent = Math.round(currentORS);
-                
+
                 requestAnimationFrame(animateNeedle);
             }
         }
 
-        animateNeedle();
+        initBrainData();
 
         // Animate health bars
         function animateHealthBars() {

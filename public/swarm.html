@@ -784,15 +784,29 @@
     </div>
 
     <script>
-        // Animate statistics
-        function animateStats() {
+        // Fetch swarm health data from API
+        async function fetchSwarmHealth() {
+            try {
+                const response = await fetch('/api/swarms/health', { signal: AbortSignal.timeout(5000) });
+                if (!response.ok) throw new Error('API unavailable');
+                return await response.json();
+            } catch (e) {
+                console.warn('Swarm API unavailable, using demo data:', e.message);
+                return null;
+            }
+        }
+
+        // Animate statistics with real or demo data
+        async function animateStats() {
+            const health = await fetchSwarmHealth();
+
             const stats = [
-                { id: 'activeWorkers', base: 847, format: n => Math.round(n) },
-                { id: 'tasksPerSec', base: 12400, format: n => (Math.round(n / 100) * 100).toLocaleString() + 'K' },
-                { id: 'efficiency', base: 94.2, format: n => n.toFixed(1) + '%' },
-                { id: 'avgLatency', base: 124, format: n => Math.round(n) + 'ms' },
-                { id: 'successRate', base: 99.94, format: n => n.toFixed(2) + '%' },
-                { id: 'completedTasks', base: 3200000, format: n => (Math.round(n / 100000) / 10).toFixed(1) + 'M' }
+                { id: 'activeWorkers', base: health?.active_workers || 847, format: n => Math.round(n) },
+                { id: 'tasksPerSec', base: health?.throughput || 12400, format: n => (Math.round(n / 100) * 100).toLocaleString() + 'K' },
+                { id: 'efficiency', base: health?.efficiency_score || 94.2, format: n => n.toFixed(1) + '%' },
+                { id: 'avgLatency', base: health?.avg_latency || 124, format: n => Math.round(n) + 'ms' },
+                { id: 'successRate', base: health?.success_rate || 99.94, format: n => n.toFixed(2) + '%' },
+                { id: 'completedTasks', base: health?.completed_tasks || 3200000, format: n => (Math.round(n / 100000) / 10).toFixed(1) + 'M' }
             ];
 
             stats.forEach(stat => {
@@ -805,7 +819,10 @@
             });
         }
 
-        setInterval(animateStats, 3000);
+        // Initial update
+        animateStats();
+        // Poll every 5 seconds
+        setInterval(animateStats, 5000);
 
         // Make commander cards interactive
         document.querySelectorAll('.commander-card').forEach(card => {
