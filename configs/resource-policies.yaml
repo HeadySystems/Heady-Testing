@@ -44,13 +44,36 @@ rateLimits:
     dailyCallBudget: 5000
 
 # ─── COST BUDGETS ─────────────────────────────────────────────────────────
+# Canonical budget definitions (costBudgets is the primary key)
+# 'budgets' alias provided for validator compatibility
 costBudgets:
   dailyTotal: 50.00
   weeklyTotal: 300.00
+  monthlyTotal: 1200.00
   perSubsystem:
     llm: 30.00
     externalApis: 10.00
     compute: 10.00
+    colabRuntimes: 5.00
+    vectorStorage: 3.00
+  alertThresholds:
+    warningPercent: 75
+    criticalPercent: 90
+  phiScaling:
+    baseAllocation: 34
+    growthFactor: 1.618
+    maxAllocation: 89
+
+budgets:
+  dailyTotal: 50.00
+  weeklyTotal: 300.00
+  monthlyTotal: 1200.00
+  perSubsystem:
+    llm: 30.00
+    externalApis: 10.00
+    compute: 10.00
+    colabRuntimes: 5.00
+    vectorStorage: 3.00
   alertThresholds:
     warningPercent: 75
     criticalPercent: 90

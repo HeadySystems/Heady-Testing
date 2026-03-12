@@ -18,8 +18,8 @@
 // Placeholder for automated system maintenance
 
 const HeadyMaid = {
-  clean: () => console.info('Cleaning system...'),
-  optimize: () => console.info('Optimizing performance...'),
+  clean: () => console.log('Cleaning system...'),
+  optimize: () => console.log('Optimizing performance...'),
 };
 
 module.exports = HeadyMaid;

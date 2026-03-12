@@ -35,8 +35,6 @@
 const express = require('express');
 const cors = require('cors');
 const { HCSysOrchestrator } = require('../orchestrator/hc-sys-orchestrator');
-const logger = require('../../src/shared/logger')('MCPGateway');
-const { PHI_TIMEOUT_PIPELINE } = require('../../src/shared/phi-timeouts');
 
 const app = express();
 const PORT = process.env.MCP_PORT || 3500;
@@ -73,7 +71,7 @@ const TOOL_REGISTRY = {
       properties: {
         command: { type: 'string' },
         cwd: { type: 'string' },
-        timeout: { type: 'number', default: PHI_TIMEOUT_PIPELINE },
+        timeout: { type: 'number', default: 30000 },
       },
       required: ['command'],
     },
@@ -325,7 +323,9 @@ app.use('/api/orchestrator', orchestrator.createRouter());
 // ─── START ────────────────────────────────────────────────────────────
 if (require.main === module) {
   app.listen(PORT, () => {
-    logger.info(`Running on port ${PORT} | Tools: ${Object.keys(TOOL_REGISTRY).length} | Orchestrator: ${JSON.stringify(orchestrator.getHealth().metrics)}`);
+    console.log(`[MCP Gateway] Running on port ${PORT}`);
+    console.log(`[MCP Gateway] Tools: ${Object.keys(TOOL_REGISTRY).length}`);
+    console.log(`[MCP Gateway] Orchestrator: ${JSON.stringify(orchestrator.getHealth().metrics)}`);
   });
 }
 

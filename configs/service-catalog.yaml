@@ -13,6 +13,8 @@
 # ║  LAYER: config                                                  ║
 # ╚══════════════════════════════════════════════════════════════════╝
 # HEADY_BRAND:END
+# configs/service-catalog.yaml
+
 
 #
 # Service Catalog - Canonical registry of all Heady services, agents, and tools.
@@ -94,6 +96,50 @@ services:
     criticality: high
     owner: system
 
+  - name: heady-swarms
+    role: Swarm Intelligence Orchestrator
+    type: internal
+    skills: [swarm-dispatch, parallel-fanout, vector-routing, semantic-matching, concurrent-execution]
+    tools: [heady-bee, phi-math, vector-router]
+    endpoint: http://swarms.headysystems.com:8085
+    healthCheck: module-loaded
+    criticality: critical
+    owner: system
+    slos:
+      availability: 99.9
+      latencyP99Ms: 500
+
+  - name: colab-latent-ops
+    role: Distributed Colab Pro+ Compute Cluster
+    type: compute
+    skills: [embedding-generation, model-inference, autonomous-learning, vector-indexing, latent-space-ops]
+    tools: [colab-primary, colab-secondary, colab-tertiary, colab-learning]
+    endpoint: http://colab.headysystems.com:8086
+    healthCheck: /api/colab/health
+    criticality: high
+    owner: system
+    runtimes:
+      primary: { concurrency: 34, jobType: embedding, envVar: COLAB_PRIMARY_ENDPOINT }
+      secondary: { concurrency: 21, jobType: inference, envVar: COLAB_SECONDARY_ENDPOINT }
+      tertiary: { concurrency: 13, jobType: training, envVar: COLAB_TERTIARY_ENDPOINT }
+      learning: { concurrency: 8, jobType: autonomous_learning, envVar: COLAB_LEARNING_ENDPOINT, dedicated: true }
+    slos:
+      availability: 95.0
+      latencyP99Ms: 30000
+
+  - name: vector-router
+    role: Semantic Vector Space Task Router
+    type: internal
+    skills: [semantic-routing, cosine-similarity, agent-matching, capability-embedding, batch-routing]
+    tools: [phi-math, structured-logger]
+    endpoint: http://router.headysystems.com:8087
+    healthCheck: module-loaded
+    criticality: critical
+    owner: system
+    slos:
+      availability: 99.99
+      latencyP99Ms: 50
+
 # ─── AGENTS ───────────────────────────────────────────────────────────────
 agents:
   - name: builder
@@ -141,6 +187,22 @@ agents:
     skills: [code-analysis, security-audit, documentation, concept-alignment, task-planning, governance-check, readiness-eval]
     tools: [claude-cli, read, grep, glob, bash]
     routing: direct
+    fallback: null
+    criticality: high
+
+  - name: swarm-coordinator
+    role: Swarm Intelligence Dispatch Coordinator
+    skills: [task-distribution, concurrent-execution, dependency-resolution, phi-backoff-retry]
+    tools: [heady-bee, heady-swarm, vector-router]
+    routing: semantic
+    fallback: claude-code
+    criticality: critical
+
+  - name: colab-ops
+    role: Colab Compute Runtime Manager
+    skills: [embedding, inference, training, autonomous-learning, health-check]
+    tools: [colab-primary, colab-secondary, colab-tertiary, colab-learning]
+    routing: capability
     fallback: null
     criticality: high
 
@@ -231,6 +293,7 @@ liquidNodes:
     type: notebooks
     status: needs_token
     envVar: GOOGLE_DRIVE_TOKEN
+    envVars: [COLAB_PRIMARY_ENDPOINT, COLAB_SECONDARY_ENDPOINT, COLAB_TERTIARY_ENDPOINT, COLAB_LEARNING_ENDPOINT, GCLOUD_ACCESS_TOKEN]
     capabilities: [list-notebooks, get-notebook]
 
   - name: latent-space-node
@@ -240,6 +303,65 @@ liquidNodes:
     capabilities: [store, search, list, delete]
     currentVectors: 43
 
+# ─── PIPELINE STAGE MAPPINGS ──────────────────────────────────────────────
+pipelineStages:
+  - name: "Channel Entry"
+    handler: heady-manager
+    agents: [observer]
+    description: "Route incoming requests to appropriate pipeline"
+  - name: "Ingest"
+    handler: heady-manager
+    agents: [researcher]
+    description: "Gather all inputs, scan files, load configs"
+  - name: "Plan (MC-Powered)"
+    handler: heady-brain
+    agents: [claude-code]
+    description: "Monte Carlo plan selection and task decomposition"
+  - name: "Execute Major Phase"
+    handler: hc-supervisor
+    agents: [builder, deployer, claude-code]
+    description: "Primary execution phase with parallel fan-out"
+  - name: "Recover"
+    handler: hc-supervisor
+    agents: [builder, auditor]
+    description: "Error recovery and retry with phi-backoff"
+  - name: "Self-Critique"
+    handler: heady-brain
+    agents: [auditor, claude-code]
+    description: "Post-execution review and quality assessment"
+  - name: "Optimize"
+    handler: heady-brain
+    agents: [builder, auditor]
+    description: "Refactor, remove dead code, improve performance"
+  - name: "Finalize"
+    handler: heady-manager
+    agents: [deployer]
+    description: "Package artifacts and prepare for delivery"
+  - name: "Monitor & Feedback Loop"
+    handler: heady-manager
+    agents: [observer]
+    description: "Continuous monitoring and feedback collection"
+  - name: "Cross-Device Sync"
+    handler: heady-sync
+    agents: [deployer]
+    description: "Synchronize state across all devices"
+  - name: "Sync Priority Changes"
+    handler: heady-sync
+    agents: [deployer]
+    description: "Prioritize and sync critical changes first"
+  - name: "Deploy Priority"
+    handler: hcautobuild
+    agents: [deployer, builder]
+    description: "Automated deployment with priority ordering"
+  - name: "Post-Quantum Cryptography"
+    handler: heady-brain
+    agents: [auditor]
+    description: "Post-quantum crypto operations and validation"
+  - name: "Cryptography"
+    handler: heady-brain
+    agents: [auditor]
+    description: "Standard cryptographic operations"
+
 # ─── HEADY VAULT ──────────────────────────────────────────────────────────
 vault:
   name: HeadyVault
@@ -248,7 +370,7 @@ vault:
   totalSecrets: 45
   categories:
     ai-llm: [ANTHROPIC_API_KEY, CLAUDE_API_KEY, OPENAI_API_KEY, GROQ_API_KEY, PERPLEXITY_API_KEY, HF_TOKEN, GEMINI_API_KEY, GCLOUD_API_KEY]
-    infrastructure: [DATABASE_URL, NEON_API_KEY, UPSTASH_REDIS_REST_URL, FIREBASE_API_KEY, PINECONE_API_KEY]
+    infrastructure: [DATABASE_URL, NEON_API_KEY, UPSTASH_REDIS_REST_URL, FIREBASE_API_KEY, PINECONE_API_KEY, COLAB_PRIMARY_ENDPOINT, COLAB_SECONDARY_ENDPOINT, COLAB_TERTIARY_ENDPOINT, COLAB_LEARNING_ENDPOINT]
     cloud-deploy: [CLOUDFLARE_API_TOKEN, SENTRY_AUTH_TOKEN, SENTRY_DSN]
     scm: [GITHUB_TOKEN, GITHUB_TOKEN_SECONDARY]
     finance: [STRIPE_SECRET_KEY]

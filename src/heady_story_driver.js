@@ -1,4 +1,19 @@
-const logger = require('../logger');
+// HEADY_BRAND:BEGIN
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  ██╗  ██╗███████╗ █████╗ ██████╗ ██╗   ██╗                     ║
+// ║  ██║  ██║██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝                     ║
+// ║  ███████║█████╗  ███████║██║  ██║ ╚████╔╝                      ║
+// ║  ██╔══██║██╔══╝  ██╔══██║██║  ██║  ╚██╔╝                       ║
+// ║  ██║  ██║███████╗██║  ██║██████╔╝   ██║                        ║
+// ║  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝                        ║
+// ║                                                                  ║
+// ║  ∞ SACRED GEOMETRY ∞  Organic Systems · Breathing Interfaces    ║
+// ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
+// ║  FILE: src/heady_story_driver.js                                                    ║
+// ║  LAYER: backend/src                                                  ║
+// ╚══════════════════════════════════════════════════════════════════╝
+// HEADY_BRAND:END
+
 /**
  * HeadyStoryDriver :: Deterministic Story Engine
  * Sacred Geometry :: Organic Systems :: Breathing Interfaces
@@ -19,7 +34,7 @@ const DECISION_ENGINE_CONFIG = Object.freeze({
   retryAttempts: 3,
   confidenceThreshold: 0.85,
   deterministicRules: {
-    confidenceOrdering: ['safety', 'compliance', 'performance', 'usability'],
+    priorityOrdering: ['safety', 'compliance', 'performance', 'usability'],
     fallbackStrategy: 'conservative',
     autoResolution: true,
   },
@@ -72,7 +87,7 @@ class StoryDriver {
     this.ensureDirectories();
     this.loadState();
     
-    logger.info('∞ HeadyStoryDriver: Initialized - Deterministic story engine ready');
+    console.log('∞ HeadyStoryDriver: Initialized - Deterministic story engine ready');
   }
 
   ensureDirectories() {
@@ -118,7 +133,7 @@ class StoryDriver {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       metadata: {
-        confidence: options.confidence || 'normal',
+        priority: options.priority || 'normal',
         owner: options.owner || 'system',
         tags: options.tags || [],
       },
@@ -301,11 +316,11 @@ class StoryDriver {
     const rules = [];
 
     const ruleRegistry = [
-      { id: 'safety_first', confidence: 1, condition: () => context.safetyCritical !== false },
-      { id: 'compliance_check', confidence: 2, condition: () => context.requiresCompliance !== false },
-      { id: 'performance_optimize', confidence: 3, condition: () => context.performanceCritical !== false },
-      { id: 'usability_ensure', confidence: 4, condition: () => context.userFacing !== false },
-      { id: 'default_continue', confidence: 99, condition: () => true },
+      { id: 'safety_first', priority: 1, condition: () => context.safetyCritical !== false },
+      { id: 'compliance_check', priority: 2, condition: () => context.requiresCompliance !== false },
+      { id: 'performance_optimize', priority: 3, condition: () => context.performanceCritical !== false },
+      { id: 'usability_ensure', priority: 4, condition: () => context.userFacing !== false },
+      { id: 'default_continue', priority: 99, condition: () => true },
     ];
 
     for (const rule of ruleRegistry) {
@@ -314,7 +329,7 @@ class StoryDriver {
       }
     }
 
-    return rules.sort((a, b) => a.confidence - b.confidence);
+    return rules.sort((a, b) => a.priority - b.priority);
   }
 
   async applyRule(rule, options) {
@@ -449,7 +464,7 @@ class StoryDriver {
   matchesFilters(story, filters) {
     if (filters.status && story.status !== filters.status) return false;
     if (filters.type && story.type !== filters.type) return false;
-    if (filters.confidence && story.metadata?.confidence !== filters.confidence) return false;
+    if (filters.priority && story.metadata?.priority !== filters.priority) return false;
     return true;
   }
 

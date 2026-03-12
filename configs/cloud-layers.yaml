@@ -9,8 +9,8 @@
 # ║                                                                  ║
 # ║  ∞ SACRED GEOMETRY ∞  Organic Systems · Breathing Interfaces    ║
 # ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
-# ║  FILE: configs/cloud-layers.yaml                                                    ║
-# ║  LAYER: config                                                  ║
+# ║  FILE: configs/cloud-layers.yaml                                 ║
+# ║  LAYER: config                                                   ║
 # ╚══════════════════════════════════════════════════════════════════╝
 # HEADY_BRAND:END
 # ═══════════════════════════════════════════════════════════════════════
@@ -49,7 +49,7 @@ layers:
   internal:
     id: internal
     description: "Team/staging layer — shared knowledge bases, team MCP connectors"
-    dns_zone: "*.staging.headysystems.comheady.systems"
+    dns_zone: "*.staging.heady.systems"
     providers:
       compute: [HeadyRender, HeadyDocker]
       models: [HeadyBrain]
@@ -60,11 +60,11 @@ layers:
       cloud_calls: hybrid
       model_preference: hybrid
     services:
-      manager: "manager.staging.headysystems.comheady.systems"
-      api: "api.staging.headysystems.comheady.systems"
-      mcp: "mcp.staging.headysystems.comheady.systems"
-      buddy: "buddy.staging.headysystems.comheady.systems"
-      brain: "brain.staging.headysystems.comheady.systems"
+      manager: "manager.staging.heady.systems"
+      api: "api.staging.heady.systems"
+      mcp: "mcp.staging.heady.systems"
+      buddy: "buddy.staging.heady.systems"
+      brain: "brain.staging.heady.systems"
     docker_profile: "cloud-saas.yml"
     brain_profile: team
 
@@ -98,7 +98,6 @@ layers:
           worker: edge-proxy
 
 # ─── PER-LAYER CLOUD PRODUCT MAPPINGS ──────────────────────────────────
-# Maps each Heady product to its cloud layer and brain
 product_layers:
   HeadySystems:
     layer: production
@@ -185,4 +184,3 @@ model_routing:
     - when: { layer: production, privacy: strict }
       use: ollama
       fallback: null
-

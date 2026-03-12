@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - HeadyOS Release Notes</title>
+    <link rel="stylesheet" href="/sacred-geometry.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Animated Background Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.1;
+            filter: blur(40px);
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #00D9FF;
+            top: -100px;
+            right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #FF00A0;
+            bottom: 10%;
+            left: 5%;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        .orb-3 {
+            width: 350px;
+            height: 350px;
+            background: #D4AF37;
+            top: 50%;
+            right: 10%;
+            animation: float 12s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            background: linear-gradient(135deg, #00D9FF, #FF00A0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #a0a0a0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+        }
+
+        /* Release Entry */
+        .release-entry {
+            margin-bottom: 50px;
+            padding-bottom: 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .release-entry:last-child {
+            border-bottom: none;
+        }
+
+        .release-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .release-version {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .version-badge {
+            background: linear-gradient(135deg, #00D9FF, #FF00A0);
+            color: #0a0e27;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1em;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .version-title {
+            color: #D4AF37;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .release-date {
+            color: #7a7a7a;
+            font-size: 0.95em;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .release-content {
+            margin-left: 0;
+        }
+
+        .release-section {
+            margin-bottom: 25px;
+        }
+
+        .release-section h3 {
+            color: #00D9FF;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .release-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .release-list li {
+            color: #b0b0b0;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .release-list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #FF00A0;
+            font-weight: bold;
+        }
+
+        .release-list li strong {
+            color: #e0e0e0;
+        }
+
+        /* Current Version Badge */
+        .current-badge {
+            background: rgba(212, 175, 55, 0.2);
+            border: 2px solid #D4AF37;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .current-badge p {
+            color: #D4AF37;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .current-badge .version {
+            color: #00D9FF;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        /* Roadmap Section */
+        .roadmap-section {
+            background: rgba(0, 217, 255, 0.08);
+            border: 2px solid rgba(0, 217, 255, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 60px 0;
+        }
+
+        .roadmap-section h2 {
+            color: #00D9FF;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+
+        .roadmap-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .roadmap-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+            padding: 25px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .roadmap-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 0, 160, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .roadmap-item h3 {
+            color: #FF00A0;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .roadmap-item p {
+            color: #a0a0a0;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: rgba(212, 175, 55, 0.08);
+            border: 2px solid rgba(212, 175, 55, 0.2);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin: 60px 0;
+        }
+
+        .newsletter-section h2 {
+            color: #D4AF37;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .newsletter-section p {
+            color: #b0b0b0;
+            font-size: 1.05em;
+            margin-bottom: 25px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-form input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #D4AF37;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+
+        .newsletter-btn {
+            background: linear-gradient(135deg, #D4AF37, #FF00A0);
+            color: #0a0e27;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .release-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form input {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="content">
+        <div class="header">
+            <h1>Changelog</h1>
+            <p>HeadyOS Release Notes & Version History</p>
+        </div>
+
+        <!-- Current Version -->
+        <div class="current-badge">
+            <p>Current Version</p>
+            <div class="version">v3.0.0</div>
+        </div>
+
+        <div class="glass-card">
+            <!-- v3.0.0 -->
+            <div class="release-entry">
+                <div class="release-header">
+                    <div class="release-version">
+                        <div class="version-badge">v3.0.0</div>
+                        <div class="version-title">Sacred Geometry v4.0</div>
+                    </div>
+                    <div class="release-date">March 2025</div>
+                </div>
+
+                <div class="release-content">
+                    <div class="release-section">
+                        <h3>🎉 Major Features</h3>
+                        <ul class="release-list">
+                            <li><strong>Sacred Geometry v4.0:</strong> Completely redesigned mathematical foundation with improved PHI-scaling, PSI-tuning, and Fibonacci optimization across all system layers</li>
+                            <li><strong>HeadySwarm Integration:</strong> Full integration of swarm intelligence protocols enabling biomimetic task distribution and self-organizing system behavior</li>
+                            <li><strong>Liquid Nodes Architecture:</strong> New containerized deployment model allowing dynamic spawning and pooling of processing nodes based on workload</li>
+                            <li><strong>Post-Quantum Cryptography:</strong> ML-KEM and SLH-DSA algorithms for quantum-resistant encryption and signatures</li>
+                            <li><strong>Enhanced CodeLock:</strong> Improved file integrity system with real-time anomaly detection and automatic rollback capabilities</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-section">
+                        <h3>✨ Improvements</h3>
+                        <ul class="release-list">
+                            <li>30% improvement in pipeline throughput through optimized stage load balancing</li>
+                            <li>60% reduction in memory footprint using golden ratio-based allocation strategies</li>
+                            <li>5x faster startup time with improved kernel initialization</li>
+                            <li>Enhanced observability with detailed metrics for all Sacred Geometry operations</li>
+                            <li>Improved developer experience with new CLI tools and comprehensive documentation</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-section">
+                        <h3>🐛 Bug Fixes</h3>
+                        <ul class="release-list">
+                            <li>Fixed race condition in PSI-threshold gating during high-concurrency scenarios</li>
+                            <li>Corrected Fibonacci retry backoff calculation for edge cases with large retry counts</li>
+                            <li>Resolved memory leak in latent space vector store during sustained operations</li>
+                            <li>Fixed protocol translator compatibility with legacy MIDI devices</li>
+                            <li>Improved stability of HeadyTranslator bridge under network congestion</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v2.5.0 -->
+            <div class="release-entry">
+                <div class="release-header">
+                    <div class="release-version">
+                        <div class="version-badge" style="background: rgba(0, 217, 255, 0.3); color: #00D9FF;">v2.5.0</div>
+                        <div class="version-title">HCFullPipeline v3.1.0</div>
+                    </div>
+                    <div class="release-date">December 2024</div>
+                </div>
+
+                <div class="release-content">
+                    <div class="release-section">
+                        <h3>🎉 Major Features</h3>
+                        <ul class="release-list">
+                            <li><strong>14-Stage Pipeline Refinement:</strong> Optimized HCFullPipeline v3.1.0 with improved stage definitions and inter-stage communication</li>
+                            <li><strong>Adaptive Stage Scaling:</strong> Automatic detection and resolution of pipeline bottlenecks through intelligent stage parallelization</li>
+                            <li><strong>Enhanced Monitoring:</strong> Real-time pipeline stage metrics, latency breakdown, and performance attribution</li>
+                            <li><strong>Probabilistic Analysis:</strong> New stochastic modeling tools for predicting pipeline behavior under variable conditions</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-section">
+                        <h3>✨ Improvements</h3>
+                        <ul class="release-list">
+                            <li>25% improvement in end-to-end pipeline latency through stage optimization</li>
+                            <li>Better resource utilization across pipeline stages with dynamic buffer sizing</li>
+                            <li>Improved error handling and recovery in pipeline stage failures</li>
+                            <li>Enhanced documentation for custom pipeline configuration</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-section">
+                        <h3>🐛 Bug Fixes</h3>
+                        <ul class="release-list">
+                            <li>Fixed data loss in pipeline stage transitions during graceful shutdown</li>
+                            <li>Corrected stage timeout calculation logic</li>
+                            <li>Resolved memory accumulation in long-running pipeline stages</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v2.0.0 -->
+            <div class="release-entry">
+                <div class="release-header">
+                    <div class="release-version">
+                        <div class="version-badge" style="background: rgba(255, 0, 160, 0.3); color: #FF00A0;">v2.0.0</div>
+                        <div class="version-title">HeadyTranslator & Protocol Bridge</div>
+                    </div>
+                    <div class="release-date">August 2024</div>
+                </div>
+
+                <div class="release-content">
+                    <div class="release-section">
+                        <h3>🎉 Major Features</h3>
+                        <ul class="release-list">
+                            <li><strong>HeadyTranslator:</strong> Revolutionary multi-protocol translation system supporting HTTP, WebSocket, UDP, MIDI, TCP, and custom protocols</li>
+                            <li><strong>Protocol Bridge:</strong> HTTP bridge server enabling seamless translation between heterogeneous systems and protocols</li>
+                            <li><strong>Semantic Protocol Mapping:</strong> Intelligent detection and mapping of semantic equivalences between different protocol implementations</li>
+                            <li><strong>Type-Safe Serialization:</strong> Schema validation and runtime type checking across protocol boundaries</li>
+                        </ul>
+                    </div>
+
+                    <div class="release-section">
+                        <h3>✨ Improvements</h3>
+                        <ul class="release-list">
+                            <li>Support for additional protocols and legacy system integration</li>
+                            <li>Improved error messages and debugging information</li>
+                            <li>Better performance for high-throughput protocol translation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v1.5.0 -->
+            <div class="release-entry">
+                <div class="release-header">
+                    <div class="release-version">
+                        <div class="version-badge" style="background: rgba(212, 175, 55, 0.3); color: #D4AF37;">v1.5.0</div>
+                        <div class="version-title">HeadyBuddy AI Assistant</div>
+                    </div>
+                    <div class="release-date">April 2024</div>
+                </div>
+
+                <div class="release-content">
+                    <div class="release-section">
+                        <h3>🎉 Major Features</h3>
+                        <ul class="release-list">
+                            <li><strong>HeadyBuddy:</strong> Integrated AI assistant for system administration, configuration, and troubleshooting</li>
+                            <li><strong>Natural Language Interface:</strong> Query system status and perform administrative tasks using conversational language</li>
+                            <li><strong>Latent Space Memory:</strong> AI assistant maintains context through vector-based memory of system operations and user interactions</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v1.0.0 -->
+            <div class="release-entry" style="border-bottom: none;">
+                <div class="release-header">
+                    <div class="release-version">
+                        <div class="version-badge" style="background: rgba(0, 217, 255, 0.2); color: #00D9FF;">v1.0.0</div>
+                        <div class="version-title">Initial HeadyOS Release</div>
+                    </div>
+                    <div class="release-date">January 2024</div>
+                </div>
+
+                <div class="release-content">
+                    <div class="release-section">
+                        <h3>🎉 Initial Release</h3>
+                        <ul class="release-list">
+                            <li><strong>Core HeadyOS Kernel:</strong> Operating system foundation built on Sacred Geometry principles</li>
+                            <li><strong>Sacred Geometry v1.0:</strong> Initial implementation of PHI-scaling, PSI-tuning, and Fibonacci sequences</li>
+                            <li><strong>HCFullPipeline v1.0:</strong> 14-stage data processing pipeline for comprehensive workload optimization</li>
+                            <li><strong>CodeLock v1.0:</strong> File integrity and approval workflow system for code management</li>
+                            <li><strong>Documentation & Community:</strong> Comprehensive guides, tutorials, and community Discord channel</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What's Next Section -->
+        <div class="roadmap-section">
+            <h2>What's Next?</h2>
+            <p style="color: #b0b0b0; margin-bottom: 25px; line-height: 1.7;">
+                We're actively working on exciting new features and improvements for HeadyOS. Here's a preview of what's coming in future releases:
+            </p>
+            <div class="roadmap-items">
+                <div class="roadmap-item">
+                    <h3>v3.1.0 (Q2 2025)</h3>
+                    <p>Enhanced machine learning capabilities with improved latent space operations and neural network optimization using Sacred Geometry principles.</p>
+                </div>
+                <div class="roadmap-item">
+                    <h3>v3.5.0 (Q3 2025)</h3>
+                    <p>IoT and Edge Computing support with lightweight protocols and resource-constrained device optimization.</p>
+                </div>
+                <div class="roadmap-item">
+                    <h3>v4.0.0 (Q4 2025)</h3>
+                    <p>Quantum Computing integration and advanced swarm intelligence with emergent system behaviors.</p>
+                </div>
+                <div class="roadmap-item">
+                    <h3>Enterprise Features</h3>
+                    <p>Multi-tenant architecture, advanced access controls, and enterprise SLA support.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="newsletter-section">
+            <h2>Subscribe for Updates</h2>
+            <p>Get notified about new releases, features, and important security updates. We send updates monthly with release highlights and upcoming features.</p>
+            <form class="newsletter-form">
+                <input type="email" placeholder="your@email.com" required>
+                <button type="submit" class="newsletter-btn">Subscribe</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/nav-global.js"></script>
+</body>
+</html>

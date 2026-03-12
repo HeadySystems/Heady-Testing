@@ -1,3 +1,5 @@
+# configs/service-domains.yaml
+
 # HEADY_BRAND:BEGIN
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  ██╗  ██╗███████╗ █████╗ ██████╗ ██╗   ██╗                     ║
@@ -16,14 +18,14 @@
 # Heady Service Domain Registry
 # 
 # This file maps all service domains for discovery, security, and observability.
-# All references use cloud domains — no api.headysystems.com/api.headysystems.com/local paths permitted.
+# All references use cloud domains — no api.heady.systems/api.heady.systems/local paths permitted.
 #
-# Root Domain: internal.heady.systems (production) / staging.headysystems.comheady.systems
-# Pattern: {service}.{environment}.{region}.headysystems.comheady.systems
+# Root Domain: internal.heady.systems (production) / staging.heady.systems
+# Pattern: {service}.{environment}.{region}.heady.systems
 
 root_domains:
-  dev: "dev.headysystems.comheady.systems"
-  staging: "staging.headysystems.comheady.systems"  
+  dev: "dev.heady.systems"
+  staging: "staging.heady.systems"  
   production: "internal.heady.systems"
 
 # ============================================================================
@@ -37,8 +39,8 @@ core_services:
       https: 3443
     domains:
       local: "manager.headysystems.com"
-      staging: "manager.staging.headysystems.comheady.systems"
-      production: "manager.us-west.headysystems.comheady.systems"
+      staging: "manager.staging.heady.systems"
+      production: "manager.us-west.heady.systems"
     protocols:
       - http
       - https
@@ -49,7 +51,7 @@ core_services:
       api_key: true
       allowed_origins:
         - "https://*.headysystems.com"
-        - "https://*.headysystems.comheady.systems"
+        - "https://*.heady.systems"
     health_check:
       endpoint: "/api/health"
       interval: 30s
@@ -60,7 +62,7 @@ core_services:
       http: 3301
     domains:
       local: "buddy.headysystems.com"
-      staging: "buddy.staging.headysystems.comheady.systems"
+      staging: "buddy.staging.heady.systems"
     protocols:
       - http
       - websocket
@@ -75,8 +77,8 @@ core_services:
       grpc: 3303
     domains:
       local: "lens.headysystems.com"
-      staging: "lens.staging.headysystems.comheady.systems"
-      production: "lens.us-west.headysystems.comheady.systems"
+      staging: "lens.staging.heady.systems"
+      production: "lens.us-west.heady.systems"
     protocols:
       - http
       - grpc
@@ -95,8 +97,8 @@ backend_services:
       grpc: 5001
     domains:
       local: "worker.headysystems.com"
-      staging: "worker.staging.headysystems.comheady.systems"
-      production: "worker.us-west.headysystems.comheady.systems"
+      staging: "worker.staging.heady.systems"
+      production: "worker.us-west.heady.systems"
     protocols:
       - http
       - grpc
@@ -110,7 +112,7 @@ backend_services:
       http: 3500
     domains:
       local: "render.headysystems.com"
-      staging: "render.staging.headysystems.comheady.systems"
+      staging: "render.staging.heady.systems"
     protocols:
       - http
       - mcp_protocol
@@ -125,7 +127,7 @@ backend_services:
       search: 3604
     domains:
       local: "mcp-{tool}.headysystems.com"  # e.g., mcp-filesystem.headysystems.com
-      staging: "mcp-{tool}.staging.headysystems.comheady.systems"
+      staging: "mcp-{tool}.staging.heady.systems"
     protocols:
       - http
       - stdio
@@ -140,8 +142,8 @@ data_services:
       postgres: 5432
     domains:
       local: "db.headysystems.com"
-      staging: "db.staging.headysystems.comheady.systems"
-      production: "db.us-west.headysystems.comheady.systems"
+      staging: "db.staging.heady.systems"
+      production: "db.us-west.heady.systems"
     protocols:
       - postgresql
     security:
@@ -155,8 +157,8 @@ data_services:
       redis: 6379
     domains:
       local: "cache.headysystems.com"
-      staging: "cache.staging.headysystems.comheady.systems"
-      production: "cache.us-west.headysystems.comheady.systems"
+      staging: "cache.staging.heady.systems"
+      production: "cache.us-west.heady.systems"
     protocols:
       - redis
     security:
@@ -173,7 +175,7 @@ frontend_services:
       http: 3000
     domains:
       local: "dashboard.headysystems.com"
-      staging: "dashboard.staging.headysystems.comheady.systems"
+      staging: "dashboard.staging.heady.systems"
       production: "app.heady.systems"  # Public-facing
     protocols:
       - https
@@ -240,7 +242,7 @@ api_services:
       email: 8085
     domains:
       local: "{service}-connector.headysystems.com"
-      staging: "{service}-connector.staging.headysystems.comheady.systems"
+      staging: "{service}-connector.staging.heady.systems"
 
 # ============================================================================
 # MONITORING & OBSERVABILITY
@@ -252,7 +254,7 @@ observability_services:
       http: 9090
     domains:
       local: "metrics.headysystems.com"
-      staging: "metrics.staging.headysystems.comheady.systems"
+      staging: "metrics.staging.heady.systems"
     protocols:
       - http
 
@@ -262,7 +264,7 @@ observability_services:
       http: 3001
     domains:
       local: "grafana.headysystems.com"
-      staging: "grafana.staging.headysystems.comheady.systems"
+      staging: "grafana.staging.heady.systems"
     protocols:
       - http
 
@@ -272,7 +274,7 @@ observability_services:
       http: 16686
     domains:
       local: "traces.headysystems.com"
-      staging: "traces.staging.headysystems.comheady.systems"
+      staging: "traces.staging.heady.systems"
 
   alertmanager:
     description: "Alert routing and management"
@@ -280,7 +282,7 @@ observability_services:
       http: 9093
     domains:
       local: "alerts.headysystems.com"
-      staging: "alerts.staging.headysystems.comheady.systems"
+      staging: "alerts.staging.heady.systems"
 
 # ============================================================================
 # IMAGINATION ENGINE SERVICES
@@ -292,7 +294,7 @@ imagination_services:
       http: 3400
     domains:
       local: "imagination.headysystems.com"
-      staging: "imagination.staging.headysystems.comheady.systems"
+      staging: "imagination.staging.heady.systems"
     protocols:
       - http
       - websocket
@@ -305,10 +307,10 @@ imagination_services:
       local: "concepts.headysystems.com"
 
 # ============================================================================
-# api.headysystems.com REPLACEMENT RULES
+# api.heady.systems REPLACEMENT RULES
 # ============================================================================
-# All services resolve via cloud domains — no api.headysystems.com references permitted
-# Enforcement: configs/api.headysystems.com-elimination-protocol.yaml
+# All services resolve via cloud domains — no api.heady.systems references permitted
+# Enforcement: configs/api.heady.systems-elimination-protocol.yaml
 
 # ============================================================================
 # SECURITY CLASSIFICATIONS
@@ -396,4 +398,3 @@ dns_configuration:
     namespace: "heady-systems"
     service_discovery: "headless_services"
     ingress_class: "nginx-internal"
-
