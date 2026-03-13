@@ -13,11 +13,13 @@
 # ║  LAYER: root                                                  ║
 # ╚══════════════════════════════════════════════════════════════════╝
 # HEADY_BRAND:END
-version: '3.8'
+#
+# MCP Gateway + Admin UI stack.
+# Usage: docker compose -f docker-compose.mcp.yml up -d
 
 services:
   mcp-gateway:
-    image: node:18
+    image: node:20-alpine
     working_dir: /app
     volumes:
       - ./:/app
@@ -25,18 +27,29 @@ services:
       - "4000:4000"
     environment:
       - NODE_ENV=production
-      - MCP_GATEWAY_TOKEN=${MCP_GATEWAY_TOKEN}
+      - MCP_GATEWAY_TOKEN=${MCP_GATEWAY_TOKEN:-}
     command: npm run start:mcp
     depends_on:
       - redis
+    networks:
+      - heady-mcp-net
+    restart: unless-stopped
 
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
+    networks:
+      - heady-mcp-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
 
   admin-ui:
-    image: node:18
+    image: node:20-alpine
     working_dir: /app/frontend
     volumes:
       - ./:/app
@@ -49,32 +62,20 @@ services:
       - mcp-gateway
       - redis
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://admin-ui.headysystems.com:3000/health"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - heady-mcp-net
     restart: unless-stopped
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
-        compress: "true"
-        labels: "service=admin-ui"
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-    networks:
-      - heady-network
-    security_opt:
-      - no-new-privileges:true
-    read_only: false
-    tmpfs:
-      - /tmp:size=100M,mode=1777
 
+networks:
+  heady-mcp-net:
+    driver: bridge

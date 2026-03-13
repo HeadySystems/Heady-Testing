@@ -13,35 +13,34 @@
 # ║  LAYER: root                                                  ║
 # ╚══════════════════════════════════════════════════════════════════╝
 # HEADY_BRAND:END
+
 # Drupal 11 with PHP 8.2
 FROM drupal:11-php8.2-apache
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
+# Install dependencies (sqlite3 for local dev, git for composer)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
-    php8.2-pgsql \
-    composer \
+    sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Drush
-RUN composer global require drush/drush
+# Install Drush via Composer
+RUN composer require drush/drush --working-dir=/opt/drupal
 
-# Set working directory
-WORKDIR /var/www/html
+WORKDIR /opt/drupal/web
 
-# Copy custom settings
-COPY settings.php /sites/default/settings.php
-RUN chmod 644 /sites/default/settings.php
+# Copy custom themes and modules (if they exist)
+COPY themes/custom/ themes/custom/ 2>/dev/null || true
+COPY modules/custom/ modules/custom/ 2>/dev/null || true
 
-# Copy all Drupal customizations
-COPY themes/custom/ /var/www/html/themes/custom/
-COPY modules/custom/ /var/www/html/modules/custom/
+# Copy settings if available
+COPY settings.php sites/default/settings.php 2>/dev/null || true
 
-# Install Heady theme
-RUN drush en heady_theme -y
-RUN drush config-set system.theme default heady_theme -y
+# Ensure writable directories
+RUN mkdir -p sites/default/files/private && \
+    chown -R www-data:www-data sites/default/files
 
-# Configure SQLite database
-RUN mkdir -p /var/www/html/sites/default/files/private
-RUN sqlite3 /var/www/html/sites/default/files/.ht.sqlite "VACUUM;"
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD curl -sf http://localhost/core/install.php || exit 1
