@@ -181,7 +181,9 @@ class SkillExecutor extends EventEmitter {
     this.registerAction('git_commit', async (params) => {
       const message = params.message || 'Automated commit via skill executor';
       try {
-        execSync(`git add -A && git commit -m "${message.replace(/"/g, '\\"')}" --allow-empty`, {
+        const { execFileSync } = require('child_process');
+        execFileSync('git', ['add', '-A'], { cwd: projectRoot, timeout: 15000, stdio: 'pipe' });
+        execFileSync('git', ['commit', '-m', message, '--allow-empty'], {
           cwd: projectRoot, timeout: 30000, stdio: 'pipe',
         });
         return { success: true, committed: true, message };

@@ -8,9 +8,8 @@
   ],
   "rules": {
     "no-restricted-syntax": ["error", {
-      "selector": "Literal[value=/api.headysystems.com|127\.0\.0\.1/]",
-      "message": "Use internal.headyio.com or api.headyio.com instead of api.headysystems.com/api.headysystems.com"
+      "selector": "Literal[value=/api\\.headysystems\\.com|127\\.0\\.0\\.1/]",
+      "message": "Use internal.headyio.com or api.headyio.com instead of raw domains/IPs"
     }]
   }
 }
-

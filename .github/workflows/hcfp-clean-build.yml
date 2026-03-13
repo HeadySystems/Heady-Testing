@@ -453,7 +453,8 @@ jobs:
           else
             echo "✅ No api.headysystems.com references found in production code"
           fi
-                              - name: 🔧 Auto-fix localhost References
+
+      - name: Auto-fix localhost References
         if: failure()
         run: |
           echo "🔧 Attempting auto-fix for localhost references..."

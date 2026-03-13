@@ -438,7 +438,10 @@ if (vmTokenRoutes) {
 app.post('/api/vm/revoke', async (req, res) => {
   const adminToken = req.headers['authorization']?.split(' ')[1];
   
-  if (adminToken !== process.env.ADMIN_TOKEN) {
+  const expected = process.env.ADMIN_TOKEN;
+  if (!adminToken || !expected ||
+      adminToken.length !== expected.length ||
+      !require('crypto').timingSafeEqual(Buffer.from(adminToken), Buffer.from(expected))) {
     return res.status(403).json({ error: 'Unauthorized' });
   }
   
