@@ -36,6 +36,7 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const yaml = require("js-yaml");
 
 const AGENT_ID = "claude-code";
 const AGENT_SKILLS = [
@@ -51,6 +52,54 @@ const AGENT_SKILLS = [
 const PROJECT_ROOT = path.join(__dirname, "..", "..");
 const DEFAULT_TIMEOUT_MS = 120000;
 
+const PROMPT_CONFIG_PATH = path.join(PROJECT_ROOT, "configs", "autonomous-agent-prompt.yaml");
+const PROMPT_SOURCE_PATH = path.join(PROJECT_ROOT, "docs", "AUTONOMOUS_AGENT_SYSTEM_PROMPT.md");
+
+/**
+ * Load and parse the autonomous agent prompt configuration.
+ * Returns null if config is unavailable (graceful degradation).
+ */
+function loadPromptConfig() {
+  try {
+    const raw = fs.readFileSync(PROMPT_CONFIG_PATH, "utf-8");
+    return yaml.load(raw);
+  } catch (err) {
+    return null;
+  }
+}
+
+/**
+ * Load the full system prompt markdown, split into indexed sections.
+ * Sections are delimited by "## <roman-numeral>." headings.
+ */
+function loadPromptSections() {
+  try {
+    const raw = fs.readFileSync(PROMPT_SOURCE_PATH, "utf-8");
+    const sections = {};
+    let currentKey = null;
+    let currentLines = [];
+
+    for (const line of raw.split("\n")) {
+      const sectionMatch = line.match(/^## ([IVXLC]+)\.\s/);
+      if (sectionMatch) {
+        if (currentKey) {
+          sections[currentKey] = currentLines.join("\n").trim();
+        }
+        currentKey = sectionMatch[1];
+        currentLines = [line];
+      } else if (currentKey) {
+        currentLines.push(line);
+      }
+    }
+    if (currentKey) {
+      sections[currentKey] = currentLines.join("\n").trim();
+    }
+    return sections;
+  } catch (err) {
+    return null;
+  }
+}
+
 class ClaudeCodeAgent {
   constructor(options = {}) {
     this.id = AGENT_ID;
@@ -62,6 +111,11 @@ class ClaudeCodeAgent {
     this.history = [];
     this.totalTokens = 0;
     this.totalCost = 0;
+
+    // Load autonomous agent prompt system
+    this.promptConfig = loadPromptConfig();
+    this.promptSections = loadPromptSections();
+    this.promptEnabled = !!(this.promptConfig && this.promptSections);
   }
 
   describe() {
@@ -125,14 +179,99 @@ class ClaudeCodeAgent {
   }
 
   /**
+   * Get the system prompt context for a given task type and pipeline stage.
+   * Uses the activation rules and section mapping from autonomous-agent-prompt.yaml.
+   *
+   * @param {string} taskType - The task type being executed
+   * @param {string} stage - The current pipeline stage
+   * @param {number} [ors] - Operational Readiness Score (0-100)
+   * @returns {string} System prompt context to prepend, or empty string
+   */
+  _getSystemPromptContext(taskType, stage, ors) {
+    if (!this.promptEnabled) return "";
+
+    const config = this.promptConfig;
+    const activation = config.activation || {};
+
+    // Check if this task type should never receive prompt injection
+    if ((activation.neverInject || []).includes(taskType)) return "";
+
+    // Determine injection mode based on ORS
+    let mode = config.injection?.defaultMode || "sections";
+    if (typeof ors === "number") {
+      if (ors > 85) mode = "full";
+      else if (ors >= 70) mode = "sections";
+      else mode = "summary";
+    }
+
+    // Summary mode: return the condensed version
+    if (mode === "summary") {
+      const summary = config.injection?.summary || "";
+      return summary ? `[SYSTEM PROMPT — MAXIMUM POTENTIAL v2 (Summary)]\n${summary}\n` : "";
+    }
+
+    // Full mode: return all sections concatenated
+    if (mode === "full") {
+      const allSections = Object.values(this.promptSections);
+      return `[SYSTEM PROMPT — MAXIMUM POTENTIAL v2]\n${allSections.join("\n\n")}\n`;
+    }
+
+    // Sections mode: determine which sections to inject
+    let sectionKeys = [];
+
+    // Always-inject task types get the pipeline-aligned sections
+    if ((activation.alwaysInject || []).includes(taskType)) {
+      const pipelineAlignment = config.pipelineAlignment || {};
+      const stageConfig = pipelineAlignment[stage] || pipelineAlignment["execute-major-phase"] || {};
+      sectionKeys = stageConfig.sections || [];
+    }
+
+    // Section-mapped task types get their specific sections
+    const sectionMapping = activation.sectionMapping || {};
+    if (sectionMapping[taskType]) {
+      const mapped = sectionMapping[taskType];
+      for (const key of mapped) {
+        if (!sectionKeys.includes(key)) sectionKeys.push(key);
+      }
+    }
+
+    if (sectionKeys.length === 0) return "";
+
+    // Build the injected prompt from selected sections
+    const injected = sectionKeys
+      .map((key) => this.promptSections[key])
+      .filter(Boolean)
+      .join("\n\n");
+
+    return injected
+      ? `[SYSTEM PROMPT — MAXIMUM POTENTIAL v2 (Sections: ${sectionKeys.join(", ")})]\n${injected}\n`
+      : "";
+  }
+
+  /**
    * Build a structured prompt for Claude Code based on task type.
    */
   _buildPrompt(request, metadata) {
+    const stage = metadata?.stage || metadata?.requestType || "execute-major-phase";
+    const ors = metadata?.ors ?? request.ors;
+
+    // Inject autonomous agent system prompt context
+    const systemPrompt = this._getSystemPromptContext(
+      request.taskType || "general",
+      stage,
+      typeof ors === "number" ? ors : undefined
+    );
+
     const context = [
       `Project: HeadyMonorepo (HCFullPipeline)`,
       `Stage: ${metadata?.requestType || "unknown"}`,
       `Run ID: ${request.runId || request.id || "N/A"}`,
     ];
+
+    // Prepend system prompt if available
+    if (systemPrompt) {
+      context.unshift(systemPrompt);
+    }
 
     switch (request.taskType) {
       case "code-generation":
@@ -349,6 +488,12 @@ class ClaudeCodeAgent {
       id: this.id,
       skills: this.skills,
       model: this.model,
+      autonomousPrompt: {
+        enabled: this.promptEnabled,
+        version: this.promptConfig?.version || null,
+        name: this.promptConfig?.name || null,
+        sectionsLoaded: this.promptSections ? Object.keys(this.promptSections).length : 0,
+      },
       history: this.history.slice(-10),
       totalInvocations: this.history.length,
       successRate: this.history.length > 0
