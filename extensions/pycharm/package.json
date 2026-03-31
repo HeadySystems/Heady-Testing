@@ -1,6 +1,0 @@
-{
-  "name": "heady-pycharm-extension",
-  "version": "1.0.0",
-  "description": "Heady extension for PyCharm integration",
-  "main": "src/extension.js"
-}

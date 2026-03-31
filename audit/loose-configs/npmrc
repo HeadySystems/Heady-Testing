@@ -1,6 +1,0 @@
-# HeadySystems pnpm configuration
-shamefully-hoist=false
-strict-peer-dependencies=true
-auto-install-peers=true
-node-linker=isolated
-enable-pre-post-scripts=false
