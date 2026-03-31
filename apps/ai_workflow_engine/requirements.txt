@@ -91,6 +91,6 @@ python-dotenv==1.2.2
 configparser==7.2.0
 
 # Utilities
-click==8.1.7
+click==8.3.1
 rich==13.7.0
 typer==0.24.1
