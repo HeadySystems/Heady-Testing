@@ -1,0 +1,1123 @@
+{
+  "registryVersion": "5.0.0",
+  "updatedAt": "2026-03-17T19:00:00.000Z",
+  "description": "HeadyRegistry \u2014 Central catalog and control point for the Heady ecosystem",
+  "last_deployment": "",
+  "cloud_first": true,
+  "local_resources_required": false,
+  "external_access_minimal": true,
+  "task_status": "COMPLETE_NOW",
+  "domain": "headyio.com",
+  "rebuilt_from_scratch": true,
+  "escalation": {
+    "level": "complete_now",
+    "priority": "critical",
+    "instructions": "All tasks escalated to COMPLETE NOW. Rebuilt on headyio.com domain."
+  },
+  "persistent_memory": {
+    "complexity_level": 10,
+    "preserve_functionality": true,
+    "user_inputs": [
+      "persistent_memory_request",
+      "maximum_complexity",
+      "full_functionality",
+      "cloud_first",
+      "no_local_resources"
+    ],
+    "project_state": "operational",
+    "timestamp": "2026-02-11T23:45:00Z",
+    "storage": "HeadyCloud",
+    "storage_locations": [
+      "https://headyio.com/api/memory",
+      "https://headyio.com/registry/memory",
+      "https://headyio.com/manager/memory"
+    ],
+    "local_storage": false,
+    "cloud_only": true,
+    "pre_execution_scan": {
+      "enabled": true,
+      "required": true,
+      "adaptive_complexity": true,
+      "real_time_monitoring": true,
+      "scan_layers": [
+        "immediate_context",
+        "project_state",
+        "headycloud_connectivity",
+        "memory_optimization",
+        "execution_readiness"
+      ],
+      "cloud_sync": true,
+      "persistent_storage": true
+    }
+  },
+  "components": [
+    {
+      "id": "heady-distiller",
+      "name": "HeadyDistiller",
+      "type": "intelligence",
+      "version": "1.0.0",
+      "sourceOfTruth": "src/distiller/distiller-node.js",
+      "endpoint": "https://distiller.headysystems.com",
+      "port": 3398,
+      "transport": "streamable-http",
+      "responsibilities": [
+        "traceCapture",
+        "recipeDistillation",
+        "executionReplay",
+        "metaDistillation",
+        "promptOptimization"
+      ],
+      "ownership": "intelligence",
+      "status": "active",
+      "criticality": "high",
+      "lastUpdated": "2026-03-16",
+      "phiConfig": {
+        "judgeThreshold": 0.854,
+        "maxOptimizationCalls": 144,
+        "metaTriggerCount": 34,
+        "timeoutMs": 12708,
+        "retryDelays": [
+          1000,
+          1618,
+          2618
+        ]
+      },
+      "health": "/health",
+      "apis": [
+        "/distill",
+        "/retrieve",
+        "/replay",
+        "/recipes/:id",
+        "/meta-distill"
+      ]
+    },
+    {
+      "id": "headyweb-browser",
+      "name": "HeadyWeb",
+      "type": "application",
+      "version": "2.0.0",
+      "sourceOfTruth": "HeadyWeb/src/App.jsx",
+      "endpoint": "https://headyweb.headysystems.com",
+      "port": 5173,
+      "transport": "https",
+      "responsibilities": [
+        "webBrowsing",
+        "aiSearch",
+        "integratedIDE",
+        "extensionSystem",
+        "devTools",
+        "sacredGeometryUI"
+      ],
+      "ownership": "application",
+      "status": "active",
+      "criticality": "critical",
+      "lastUpdated": "2026-03-17",
+      "health": "/health",
+      "apis": ["/search", "/settings", "/ide", "/extensions"]
+    },
+    {
+      "id": "headybuddy-agent",
+      "name": "HeadyBuddy",
+      "type": "agent",
+      "version": "2.0.0",
+      "sourceOfTruth": "HeadyBuddy/server/index.js",
+      "endpoint": "https://buddy.headysystems.com",
+      "port": 4800,
+      "transport": "websocket+http",
+      "responsibilities": [
+        "aiCompanion",
+        "multiProviderChat",
+        "persistentMemory",
+        "taskAutomation",
+        "crossPlatformPresence",
+        "digitalTaskExecution",
+        "autonomousActions"
+      ],
+      "ownership": "agent",
+      "status": "active",
+      "criticality": "critical",
+      "lastUpdated": "2026-03-17",
+      "health": "/health",
+      "apis": ["/api/chat", "/api/chat/stream", "/api/skills", "/api/tasks", "/api/memory/:id"]
+    },
+    {
+      "id": "headyai-ide",
+      "name": "HeadyAI-IDE",
+      "type": "application",
+      "version": "1.0.0",
+      "sourceOfTruth": "HeadyWeb/src/components/HeadyIDE.jsx",
+      "endpoint": "headyweb://ide",
+      "transport": "internal",
+      "responsibilities": [
+        "codeEditing",
+        "aiCodeAssist",
+        "cloudComputation",
+        "gitIntegration",
+        "terminalEmulation",
+        "fileManagement",
+        "livePreview"
+      ],
+      "ownership": "developer-tools",
+      "status": "active",
+      "criticality": "high",
+      "lastUpdated": "2026-03-17"
+    },
+    {
+      "id": "headyos-core",
+      "name": "HeadyOS Core",
+      "type": "platform",
+      "version": "1.0.0",
+      "sourceOfTruth": "headyos-core/src/index.js",
+      "endpoint": "https://os.headysystems.com",
+      "port": 4900,
+      "transport": "websocket+http",
+      "responsibilities": [
+        "latentOSKernel",
+        "personalPersistence",
+        "liquidContentRouting",
+        "connectorRegistry",
+        "intelligentOrchestration",
+        "cloudBridge",
+        "crossDeviceSync"
+      ],
+      "ownership": "platform",
+      "status": "active",
+      "criticality": "critical",
+      "lastUpdated": "2026-03-17",
+      "health": "/health",
+      "apis": ["/api/kernel/status", "/api/persistence", "/api/connectors", "/api/orchestrate"]
+    }
+  ],
+  "aiNodes": [
+    {
+      "id": "jules",
+      "name": "JULES",
+      "role": "The Hyper-Surgeon",
+      "tool": "goose",
+      "triggers": [
+        "optimization"
+      ],
+      "capabilities": [
+        "unusedImportDetection",
+        "codeQuality",
+        "performance",
+        "security"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "observer",
+      "name": "OBSERVER",
+      "role": "The Natural Observer",
+      "tool": "observer_daemon",
+      "triggers": [
+        "monitor"
+      ],
+      "capabilities": [
+        "workspaceAnalysis",
+        "fileSystemMonitoring",
+        "performanceMetrics"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "builder",
+      "name": "BUILDER",
+      "role": "The Constructor",
+      "tool": "hydrator",
+      "triggers": [
+        "new_project"
+      ],
+      "capabilities": [
+        "buildOptimization",
+        "dependencyManagement",
+        "resourceCleanup"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "atlas",
+      "name": "ATLAS",
+      "role": "The Auto-Archivist",
+      "tool": "auto_doc",
+      "triggers": [
+        "documentation"
+      ],
+      "capabilities": [
+        "apiDocExtraction",
+        "codeAnalysis",
+        "knowledgeBaseCreation"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "pythia",
+      "name": "PYTHIA",
+      "role": "The Oracle",
+      "tool": "HuggingFace_Tool",
+      "triggers": [
+        "huggingface",
+        "predict",
+        "ask_oracle"
+      ],
+      "capabilities": [
+        "textGeneration",
+        "sentimentAnalysis",
+        "inference"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "maestro",
+      "name": "MAESTRO",
+      "role": "The Orchestration Conductor",
+      "tool": "orchestrator",
+      "triggers": ["coordinate", "orchestrate", "workflow"],
+      "capabilities": ["taskDecomposition", "agentRouting", "workflowExecution", "parallelCoordination"],
+      "status": "active"
+    },
+    {
+      "id": "sentinel",
+      "name": "SENTINEL",
+      "role": "The Security Guardian",
+      "tool": "security_scanner",
+      "triggers": ["security", "audit", "vulnerability"],
+      "capabilities": ["secretsScanning", "vulnerabilityDetection", "complianceCheck", "accessControl"],
+      "status": "active"
+    },
+    {
+      "id": "vinci",
+      "name": "VINCI",
+      "role": "The Design Architect",
+      "tool": "design_engine",
+      "triggers": ["design", "ui", "ux"],
+      "capabilities": ["uiGeneration", "designSystem", "responsiveLayout", "accessibilityAudit"],
+      "status": "active"
+    },
+    {
+      "id": "montecarlo",
+      "name": "MONTECARLO",
+      "role": "The Probabilistic Simulator",
+      "tool": "simulation_engine",
+      "triggers": ["simulate", "probability", "forecast"],
+      "capabilities": ["monteCarloSimulation", "riskAnalysis", "scenarioModeling", "optimizationSearch"],
+      "status": "active"
+    },
+    {
+      "id": "critique",
+      "name": "CRITIQUE",
+      "role": "The Quality Auditor",
+      "tool": "quality_engine",
+      "triggers": ["review", "critique", "quality"],
+      "capabilities": ["codeReview", "architectureReview", "performanceAudit", "bestPracticeEnforcement"],
+      "status": "active"
+    },
+    {
+      "id": "kinetics",
+      "name": "KINETICS",
+      "role": "The Motion Engine",
+      "tool": "animation_engine",
+      "triggers": ["animate", "motion", "interaction"],
+      "capabilities": ["animationDesign", "interactionPatterns", "motionGraphics", "transitionDesign"],
+      "status": "active"
+    },
+    {
+      "id": "imagine",
+      "name": "IMAGINE",
+      "role": "The Creative Visionary",
+      "tool": "creative_engine",
+      "triggers": ["imagine", "create", "generate"],
+      "capabilities": ["imageGeneration", "conceptDesign", "brandingAssets", "creativeWriting"],
+      "status": "active"
+    },
+    {
+      "id": "stories",
+      "name": "STORIES",
+      "role": "The Narrative Architect",
+      "tool": "narrative_engine",
+      "triggers": ["story", "narrative", "content"],
+      "capabilities": ["contentGeneration", "narrativeStructure", "documentationWriting", "brandVoice"],
+      "status": "active"
+    }
+  ],
+  "tools": [
+    {
+      "id": "localhost-to-domain",
+      "name": "Localhost-to-Domain Migration Tool",
+      "type": "migration",
+      "version": "3.0.0",
+      "sourceOfTruth": "scripts/localhost-to-domain.js",
+      "responsibilities": [
+        "localhostInventory",
+        "domainMigration",
+        "hostsFileGeneration",
+        "serviceDiscoveryIntegration"
+      ],
+      "ownership": "infrastructure",
+      "status": "active",
+      "criticality": "high",
+      "lastUpdated": "2026-02-07"
+    },
+    {
+      "id": "hcfp-error-recovery",
+      "name": "HCFP Error Recovery Workflow",
+      "type": "recovery",
+      "version": "3.0.0",
+      "sourceOfTruth": "scripts/hcfp-error-recovery.ps1",
+      "responsibilities": [
+        "errorClassification",
+        "rootCauseAnalysis",
+        "intelligentRetry",
+        "cleanRebuild",
+        "evidencePreservation"
+      ],
+      "ownership": "core",
+      "status": "active",
+      "criticality": "critical",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "extensions": [
+    {
+      "id": "chrome-extension",
+      "name": "Heady AI Companion (Chrome/Edge)",
+      "type": "browser-extension",
+      "version": "3.0.0",
+      "sourceOfTruth": "extensions/chrome/",
+      "platform": "chrome-edge-firefox",
+      "responsibilities": [
+        "textCapture",
+        "contextMenu",
+        "multiEndpoint",
+        "healthMonitoring",
+        "notifications"
+      ],
+      "ownership": "ui",
+      "status": "active",
+      "criticality": "medium",
+      "lastUpdated": "2026-02-07"
+    },
+    {
+      "id": "vscode-extension",
+      "name": "Heady Dev Companion (VS Code)",
+      "type": "ide-extension",
+      "version": "3.0.0",
+      "sourceOfTruth": "extensions/vscode/",
+      "platform": "vscode",
+      "responsibilities": [
+        "statusBar",
+        "selectionCapture",
+        "taskView",
+        "patternView",
+        "endpointSwitching"
+      ],
+      "ownership": "developer-tools",
+      "status": "active",
+      "criticality": "medium",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "pwa": [
+    {
+      "id": "heady-pwa",
+      "name": "Heady Systems PWA",
+      "type": "progressive-web-app",
+      "version": "3.0.0",
+      "sourceOfTruth": "public/manifest.webmanifest",
+      "responsibilities": [
+        "desktopInstallation",
+        "offlineSupport",
+        "serviceWorker",
+        "pushNotifications",
+        "fileHandlers"
+      ],
+      "ownership": "ui",
+      "status": "active",
+      "criticality": "medium",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "hcfullpipeline",
+      "name": "HCFullPipeline",
+      "version": "3.1.0",
+      "owner": "core",
+      "sourceOfTruth": "configs/hcfullpipeline.yaml",
+      "stages": [
+        "channel-entry",
+        "ingest",
+        "plan",
+        "execute-major-phase",
+        "recover",
+        "self-critique",
+        "optimize",
+        "finalize",
+        "monitor-feedback"
+      ],
+      "inputs": [
+        "configs",
+        "registry",
+        "events",
+        "channels",
+        "publicDomainPatterns"
+      ],
+      "outputs": [
+        "artifacts",
+        "stories",
+        "checkpoints",
+        "critiques",
+        "improvements",
+        "metrics"
+      ],
+      "dependencies": [
+        "heady-manager",
+        "hc-supervisor",
+        "hc-brain",
+        "hc-checkpoint",
+        "mc-plan-scheduler",
+        "pattern-engine",
+        "self-critique-engine",
+        "headybuddy"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "monte-carlo-optimization",
+      "name": "Monte Carlo Optimization",
+      "owner": "core",
+      "sourceOfTruth": ".windsurf/workflows/monte-carlo-optimization.md",
+      "inputs": [
+        "taskTypes",
+        "latencyData"
+      ],
+      "outputs": [
+        "optimizedPlans",
+        "driftAlerts"
+      ],
+      "dependencies": [
+        "mc-plan-scheduler"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "heady-full-system",
+      "name": "Heady Full System Workflow",
+      "owner": "core",
+      "sourceOfTruth": ".windsurf/workflows/heady-full-system.md",
+      "inputs": [
+        "allSystems"
+      ],
+      "outputs": [
+        "verifiedSystem"
+      ],
+      "dependencies": [
+        "mc-plan-scheduler",
+        "pattern-engine",
+        "self-critique-engine"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "observability-inventory",
+      "name": "Observability Inventory",
+      "owner": "HeadyMaid",
+      "artifacts": [
+        ".heady-memory/inventory/inventory.json"
+      ],
+      "inputs": [
+        "filesystem"
+      ],
+      "outputs": [
+        "inventory",
+        "events"
+      ],
+      "dependencies": [
+        "headyregistry"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "task-routing",
+      "name": "Task Routing",
+      "owner": "HeadyConductor",
+      "inputs": [
+        "events",
+        "registry"
+      ],
+      "outputs": [
+        "tasks"
+      ],
+      "dependencies": [
+        "heady-manager",
+        "headylens"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "checkpoint-sync",
+      "name": "Checkpoint Sync",
+      "owner": "core",
+      "sourceOfTruth": "scripts/checkpoint-sync.ps1",
+      "inputs": [
+        "git-state",
+        "registry",
+        "doc-owners"
+      ],
+      "outputs": [
+        "synced-docs",
+        "synced-registry",
+        "synced-notebooks"
+      ],
+      "dependencies": [
+        "headyregistry",
+        "hc-checkpoint"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "heady-sync",
+      "name": "HeadySync",
+      "owner": "core",
+      "sourceOfTruth": "scripts/Heady-Sync.ps1",
+      "inputs": [
+        "git-remotes"
+      ],
+      "outputs": [
+        "synced-repos"
+      ],
+      "dependencies": [],
+      "status": "active"
+    },
+    {
+      "id": "two-base-fusion",
+      "name": "Two-Base Fusion",
+      "owner": "core",
+      "sourceOfTruth": ".windsurf/workflows/two-base-fusion.md",
+      "inputs": [
+        "baseA",
+        "baseB",
+        "verticalContext"
+      ],
+      "outputs": [
+        "fusedArchitecture",
+        "phasedRoadmap",
+        "agentAssignments"
+      ],
+      "dependencies": [
+        "heady-auto-ide"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "codemap-optimization",
+      "name": "Codemap Optimization",
+      "owner": "core",
+      "sourceOfTruth": ".windsurf/workflows/codemap-optimization.md",
+      "inputs": [
+        "codebase",
+        "ai-nodes"
+      ],
+      "outputs": [
+        "optimized-code",
+        "scores"
+      ],
+      "dependencies": [
+        "jules",
+        "observer",
+        "builder",
+        "atlas"
+      ],
+      "status": "active"
+    }
+  ],
+  "environments": [
+    {
+      "id": "local",
+      "name": "Local Dev",
+      "endpoint": "http://api.headysystems.com:3300",
+      "color": "green",
+      "status": "active",
+      "lastHealthCheck": null
+    },
+    {
+      "id": "cloud-me",
+      "name": "Cloud HeadyMe",
+      "endpoint": "https://heady-manager-bf4q4zywhq-uc.a.run.app",
+      "color": "cyan",
+      "status": "active",
+      "lastHealthCheck": null
+    },
+    {
+      "id": "cloud-sys",
+      "name": "Cloud HeadySystems",
+      "endpoint": "https://heady-edge-gateway-bf4q4zywhq-uc.a.run.app",
+      "color": "magenta",
+      "status": "active",
+      "lastHealthCheck": null
+    },
+    {
+      "id": "cloud-conn",
+      "name": "Cloud HeadyConnection",
+      "endpoint": "https://heady-onboarding-bf4q4zywhq-ue.a.run.app",
+      "color": "yellow",
+      "status": "active",
+      "lastHealthCheck": null
+    },
+    {
+      "id": "hybrid",
+      "name": "Hybrid Local+Cloud",
+      "endpoint": "mixed",
+      "color": "white",
+      "status": "available",
+      "lastHealthCheck": null
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "docker-image",
+      "name": "Heady Docker Image",
+      "type": "container-image",
+      "sourceOfTruth": "Dockerfile",
+      "status": "active"
+    },
+    {
+      "id": "docker-compose-stack",
+      "name": "Docker Compose Stack",
+      "type": "iac",
+      "sourceOfTruth": "docker-compose.yml",
+      "status": "active"
+    }
+  ],
+  "patterns": [
+    {
+      "id": "sacred-geometry",
+      "name": "Sacred Geometry Architecture",
+      "type": "design-system",
+      "description": "Rounded, organic, breathing interfaces with Sacred Geometry aesthetics",
+      "status": "active"
+    },
+    {
+      "id": "checkpoint-protocol",
+      "name": "Checkpoint Protocol",
+      "type": "operational",
+      "description": "All files synced at every checkpoint \u2014 code, config, docs, notebooks, registry",
+      "sourceOfTruth": "docs/CHECKPOINT_PROTOCOL.md",
+      "status": "active"
+    },
+    {
+      "id": "direct-routing",
+      "name": "Direct No-Proxy Routing",
+      "type": "networking",
+      "description": "Internal calls use direct routing, no proxy",
+      "sourceOfTruth": "packages/networking/",
+      "status": "active"
+    },
+    {
+      "id": "supervisor-pattern",
+      "name": "Multi-Agent Supervisor",
+      "type": "agent-pattern",
+      "description": "Fan-out to agents via Supervisor with parallel execution",
+      "sourceOfTruth": "packages/hc-supervisor/",
+      "status": "active"
+    },
+    {
+      "id": "quiz-protocol",
+      "name": "Quiz & Flashcard Documentation",
+      "type": "documentation",
+      "description": "All documentation generated using the Quiz & Flashcard methodology",
+      "sourceOfTruth": ".github/copilot-instructions.md",
+      "status": "active"
+    },
+    {
+      "id": "stop-rule",
+      "name": "Build-or-Repair Stop Rule",
+      "type": "operational",
+      "description": "Build aggressively when healthy; repair first when not",
+      "sourceOfTruth": "configs/hcfullpipeline.yaml",
+      "status": "active"
+    },
+    {
+      "id": "aloha-mode",
+      "name": "Aloha Mode (Always-On)",
+      "type": "governance",
+      "description": "Hawaiian-inspired protocol: safety > clarity > story > speed. De-optimization by default. Stability first. Websites must be fully functional as baseline.",
+      "sourceOfTruth": "configs/aloha-protocol.yaml",
+      "status": "active"
+    }
+  ],
+  "docs": [
+    {
+      "id": "readme",
+      "path": "README.md",
+      "type": "orientation",
+      "status": "current",
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "claude-protocol",
+      "path": "CLAUDE.md",
+      "type": "agent-protocol",
+      "status": "current",
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "checkpoint-protocol",
+      "path": "docs/CHECKPOINT_PROTOCOL.md",
+      "type": "operational",
+      "status": "current",
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "services-manual",
+      "path": "docs/heady-services-manual.md",
+      "type": "reference",
+      "status": "current",
+      "lastUpdated": "2025-01-01"
+    },
+    {
+      "id": "notebooklm-quick-start",
+      "path": "docs/notebooklm-quick-start.md",
+      "type": "onboarding",
+      "status": "current",
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "notebooklm-project-notebook",
+      "path": "docs/notebooklm-project-notebook.md",
+      "type": "project-tracking",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "doc-owners",
+      "path": "docs/DOC_OWNERS.yaml",
+      "type": "governance",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "notebooklm-source",
+      "path": "docs/heady-notebooklm-source.md",
+      "type": "comprehensive-reference",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "heady-buddy-config",
+      "path": "configs/heady-buddy.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "monte-carlo-config",
+      "path": "configs/monte-carlo-scheduler.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "speed-patterns-protocol",
+      "path": "configs/speed-and-patterns-protocol.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "system-self-awareness",
+      "path": "configs/system-self-awareness.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "connection-integrity",
+      "path": "configs/connection-integrity.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "extension-pricing",
+      "path": "configs/extension-pricing.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "multi-agent-transparency",
+      "path": "docs/MULTI_AGENT_TRANSPARENCY.md",
+      "type": "governance",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "iterative-rebuild-protocol",
+      "path": "docs/ITERATIVE_REBUILD_PROTOCOL.md",
+      "type": "governance",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "headystack-distribution-protocol",
+      "path": "docs/HEADY_STACK_DISTRIBUTION_PROTOCOL.md",
+      "type": "architecture",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "cross-platform-protocol",
+      "path": "docs/HEADY_CROSS_PLATFORM_PROTOCOL.md",
+      "type": "deployment-protocol",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "heady-ide-config",
+      "path": "configs/heady-ide.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "copilot-instructions",
+      "path": ".github/copilot-instructions.md",
+      "type": "agent-protocol",
+      "status": "current",
+      "lastUpdated": "2025-01-01"
+    },
+    {
+      "id": "aloha-protocol-config",
+      "path": "configs/aloha-protocol.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "de-optimization-config",
+      "path": "configs/de-optimization-protocol.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "stability-first-config",
+      "path": "configs/stability-first.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "browser-buddy-ide-protocol",
+      "path": "docs/HEADY_BROWSER_BUDDY_IDE_PROTOCOL.md",
+      "type": "architecture",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "heady-browser-config",
+      "path": "configs/heady-browser.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "buddy-always-on-config",
+      "path": "configs/heady-buddy-always-on.yaml",
+      "type": "config",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "heady-auto-ide-doc",
+      "path": "docs/HEADY_AUTO_IDE.md",
+      "type": "system-prompt",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "connection-kits-overview",
+      "path": "HeadyConnectionKits/00-Overview/README.md",
+      "type": "distribution",
+      "status": "current",
+      "lastUpdated": "2026-02-06"
+    },
+    {
+      "id": "hcfp-localhost-migration",
+      "path": ".windsurf/workflows/hcfp-localhost-migration.md",
+      "type": "infrastructure",
+      "status": "current",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "cicd": [
+    {
+      "id": "hcfp-production-clean-build",
+      "name": "HCFP Production Clean Build",
+      "type": "github-actions",
+      "sourceOfTruth": ".github/workflows/hcfp-production-clean-build.yml",
+      "responsibilities": [
+        "preflightValidation",
+        "cleanBuild",
+        "errorClassification",
+        "securityScan",
+        "integrationTests"
+      ],
+      "triggers": [
+        "push:main",
+        "push:production",
+        "pull_request"
+      ],
+      "status": "active",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "tests": [
+    {
+      "id": "domain-connectivity-tests",
+      "name": "Domain Connectivity Integration Tests",
+      "type": "integration-test",
+      "sourceOfTruth": "tests/integration/domain-connectivity.test.js",
+      "coverage": [
+        "serviceReachability",
+        "dnsResolution",
+        "portConflicts",
+        "securityClassifications",
+        "localhostMigration"
+      ],
+      "status": "active",
+      "lastUpdated": "2026-02-07"
+    }
+  ],
+  "notebooks": [
+    {
+      "id": "quick-start",
+      "path": "notebooks/quick-start/heady-quick-start.ipynb",
+      "type": "quick-start",
+      "description": "Fast system orientation and first API calls",
+      "status": "current",
+      "ciValidated": true,
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "pipeline-walkthrough",
+      "path": "notebooks/tutorials/hcfullpipeline-walkthrough.ipynb",
+      "type": "tutorial",
+      "description": "Deep-dive into HCFullPipeline stages and checkpoints",
+      "status": "current",
+      "ciValidated": true,
+      "lastUpdated": "2025-07-01"
+    },
+    {
+      "id": "registry-api-demo",
+      "path": "notebooks/examples/registry-api-demo.ipynb",
+      "type": "example",
+      "description": "Registry API exploration and querying",
+      "status": "current",
+      "ciValidated": true,
+      "lastUpdated": "2025-07-01"
+    }
+  ],
+  "repos": [
+    {
+      "id": "heady-sys",
+      "name": "HeadySystems/Heady",
+      "url": "git@github.com:HeadySystems/Heady.git",
+      "role": "primary",
+      "promotionTargets": [],
+      "branchPolicy": {
+        "main": "protected-prod",
+        "release/*": "frozen"
+      }
+    },
+    {
+      "id": "heady-me",
+      "name": "HeadyMe/Heady",
+      "url": "git@github.com:HeadyMe/Heady.git",
+      "role": "personal-cloud",
+      "promotionTargets": [
+        "heady-sys",
+        "heady-conn"
+      ],
+      "branchPolicy": {
+        "main": "protected-prod",
+        "personal/*": "local-only"
+      }
+    },
+    {
+      "id": "heady-conn",
+      "name": "HeadyConnection/Heady",
+      "url": "https://github.com/HeadySystems/HeadyConnection.git",
+      "role": "cross-system-bridge",
+      "promotionTargets": [
+        "heady-sys",
+        "heady-me"
+      ],
+      "branchPolicy": {
+        "main": "protected-prod",
+        "tenant/*": "env-specific"
+      }
+    },
+    {
+      "id": "sandbox",
+      "name": "HeadySystems/sandbox",
+      "url": "git@github.com:HeadySystems/sandbox.git",
+      "role": "experimental",
+      "promotionTargets": [
+        "heady-sys",
+        "heady-me",
+        "heady-conn"
+      ],
+      "branchPolicy": {
+        "main": "dev",
+        "exp/*": "short-lived"
+      }
+    }
+  ],
+  "verticals": [
+    {
+      "id": "mcp",
+      "name": "HeadyMCP",
+      "description": "Model Context Protocol gateway with admin UI",
+      "status": "active",
+      "components": [
+        "mcp-gateway",
+        "admin-ui"
+      ],
+      "dockerProfile": "docker-compose.mcp.yml"
+    }
+  ],
+  "userProfiles": [
+    {
+      "id": "eric",
+      "name": "Eric Kit",
+      "path": "configs/user-profiles/eric.yaml",
+      "default": true
+    }
+  ],
+  "protocols": {
+    "curiosity": {
+      "description": "Triggers investigation of recurring or surprising behavior",
+      "triggers": [
+        "recurring-errors",
+        "banned-patterns",
+        "config-drift",
+        "strange-configs"
+      ],
+      "actions": [
+        "gather-context",
+        "form-hypotheses",
+        "propose-safeguards",
+        "surface-patterns"
+      ]
+    }
+  },
+  "error_ids": {
+    "ERR-BANNED-HOST-TARGET": {
+      "severity": "critical",
+      "protocol": "curiosity",
+      "description": "Attempt to use banned host target (api.headysystems.com/onrender.com)"
+    }
+  }
+}

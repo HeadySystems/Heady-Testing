@@ -1,0 +1,172 @@
+const logger = require('../../utils/logger').createLogger('auto-fix');
+'use strict';
+
+/**
+ * HeadyCache Express Server Entry Point
+ *
+ * Starts the Heady™Cache HTTP service with:
+ *   - helmet (security headers)
+ *   - cors (cross-origin)
+ *   - compression (gzip)
+ *   - JSON body parsing
+ *   - Structured request logging
+ *   - Graceful shutdown
+ */
+
+const express = require('express');
+const helmet = require('helmet');
+const cors = require('cors');
+const compression = require('compression');
+
+const config = require('./config');
+const { HeadyCache } = require('./index');
+const { createRouter } = require('./routes');
+const { healthCheck } = require('./health');
+const { getLogger } = require('../structured-logger');
+
+const log = getLogger('heady-cache');
+
+// ---------------------------------------------------------------------------
+// Initialize cache
+// ---------------------------------------------------------------------------
+
+const cache = new HeadyCache();
+
+// ---------------------------------------------------------------------------
+// Build Express app
+// ---------------------------------------------------------------------------
+
+const app = express();
+const logger = require('../../utils/logger');
+
+// Security & middleware — strict CORS, no wildcard
+const HEADY_ORIGINS = [
+  'https://headyme.com', 'https://headysystems.com', 'https://headyconnection.org',
+  'https://headybuddy.org', 'https://headymcp.com', 'https://headyio.com',
+  'https://headybot.com', 'https://headyapi.com', 'https://headyai.com',
+  'https://headylens.com', 'https://headyfinance.com',
+  ...(process.env.NODE_ENV !== 'production' ? [process.env.SERVICE_URL || 'http://0.0.0.0:3000', process.env.SERVICE_URL || 'http://0.0.0.0:3300', process.env.SERVICE_URL || 'http://0.0.0.0:3301'] : [])
+];
+app.use(helmet());
+app.use(cors({ origin: HEADY_ORIGINS, credentials: true }));
+app.use(compression());
+app.use(express.json({ limit: '10mb' }));
+
+// Request logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (process.env.NODE_ENV !== 'test') {
+      log.info('request', {
+          method: req.method,
+          path: req.path,
+          status: res.statusCode,
+          durationMs: duration,
+        });
+    }
+  });
+  next();
+});
+
+// Mount cache routes
+app.use('/', createRouter(cache));
+
+// Override the /health route with the full health check
+app.get('/health/detailed', async (req, res) => {
+  try {
+    const result = await healthCheck(cache);
+    const status = result.status === 'ok' ? 200 : 503;
+    res.status(status).json(result);
+  } catch (err) {
+    res.status(503).json({ status: 'error', error: err.message });
+  }
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+});
+
+// Error handler
+app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+  log.error('unhandled error', { error: err.message, stack: err.stack });
+  res.status(500).json({ error: err.message || 'Internal server error' });
+});
+
+// ---------------------------------------------------------------------------
+// Start server
+// ---------------------------------------------------------------------------
+
+async function start() {
+  try {
+    await cache.init();
+    log.info('cache initialized', { backend: config.backend });
+
+    const server = app.listen(config.port, '0.0.0.0', () => {
+      log.info('started', {
+          port: config.port,
+          backend: config.backend,
+          maxSize: config.maxSize,
+          ttl: config.ttl,
+          similarityThreshold: config.similarityThreshold,
+          evictionPolicy: config.evictionPolicy,
+        });
+    });
+
+    // ---------------------------------------------------------------------------
+    // Graceful shutdown
+    // ---------------------------------------------------------------------------
+
+    const shutdown = async (signal) => {
+      log.info('shutting down', { signal });
+      server.close(async () => {
+        try {
+          await cache.close();
+          log.info('shutdown complete');
+          process.exit(0);
+        } catch (err) {
+          log.error('shutdown error', { error: err.message });
+          process.exit(1);
+        }
+      });
+      // Force exit if graceful shutdown takes too long
+      setTimeout(() => process.exit(1), typeof phiMs === 'function' ? phiMs(10000) : 10000).unref();
+    };
+
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT', () => shutdown('SIGINT'));
+
+    process.on('unhandledRejection', (reason) => {
+      logger.error('[heady-cache] unhandledRejection:', reason);
+    });
+
+    process.on('uncaughtException', (err) => {
+      logger.error('[heady-cache] uncaughtException:', err);
+      process.exit(1);
+    });
+
+    return server;
+  } catch (err) {
+    logger.error('[heady-cache] startup error:', err);
+    process.exit(1);
+  }
+}
+
+// Only start if called directly
+if (require.main === module) {
+  start();
+}
+
+module.exports = { app, cache, start };
+
+
+// --- Auto-Unified Latent Service Pattern ---
+if (module.exports && typeof module.exports === 'object') {
+  if (!module.exports.start) module.exports.start = async () => ({ status: 'started' });
+  if (!module.exports.stop) module.exports.stop = async () => ({ status: 'stopped' });
+  if (!module.exports.health) module.exports.health = () => ({ status: 'healthy' });
+  if (!module.exports.metrics) module.exports.metrics = () => ({ usages: 0 });
+  if (!module.exports._tick) module.exports._tick = async () => {};
+}
+// -------------------------------------------

@@ -1,0 +1,52 @@
+{
+  "name": "@heady-ai/mcp-server",
+  "version": "5.0.0",
+  "description": "Model Context Protocol (MCP) server for the Heady AI Platform — cloud-backed tool proxy with zero proprietary code.",
+  "main": "src/facade.js",
+  "bin": {
+    "heady-mcp": "src/facade.js"
+  },
+  "files": [
+    "src/facade.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/facade.js",
+    "test": "node -e \"require('./src/facade.js'); console.log('✅ Facade loads')\""
+  },
+  "dependencies": {},
+  "license": "MIT",
+  "author": {
+    "name": "HeadySystems Inc.",
+    "email": "eric@headyconnection.org",
+    "url": "https://heady-ai.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HeadyMe/heady-production.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://heady-ai.com",
+  "bugs": {
+    "url": "https://github.com/HeadyMe/heady-production/issues"
+  },
+  "keywords": [
+    "heady",
+    "ai",
+    "mcp",
+    "model-context-protocol",
+    "cloud",
+    "multi-agent",
+    "vector-memory"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": "./src/facade.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

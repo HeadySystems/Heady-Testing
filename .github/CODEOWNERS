@@ -1,0 +1,19 @@
+# Heady™ Latent OS — Code Ownership
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default — Eric Head reviews everything
+* @erichaywood
+
+# Core server infrastructure
+src/core/ @erichaywood
+services/ @erichaywood
+
+# Security-sensitive files
+.github/ @erichaywood
+Dockerfile @erichaywood
+docker-compose*.yml @erichaywood
+*.env* @erichaywood
+
+# Content and branding
+content/ @erichaywood
+public/ @erichaywood

@@ -1,0 +1,6 @@
+name = "heady-mcp-transport"
+main = "src/index.ts"
+compatibility_date = "2026-03-01"
+
+[env.production]
+route = "https://mcp.headymcp.com/*"

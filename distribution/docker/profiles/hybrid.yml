@@ -1,0 +1,68 @@
+# HEADY_BRAND:BEGIN
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  ██╗  ██╗███████╗ █████╗ ██████╗ ██╗   ██╗                     ║
+# ║  ██║  ██║██╔════╝██╔══██╗██╔══██╗╚██╗ ██╔╝                     ║
+# ║  ███████║█████╗  ███████║██║  ██║ ╚████╔╝                      ║
+# ║  ██╔══██║██╔══╝  ██╔══██║██║  ██║  ╚██╔╝                       ║
+# ║  ██║  ██║███████╗██║  ██║██████╔╝   ██║                        ║
+# ║  ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝    ╚═╝                        ║
+# ║                                                                  ║
+# ║  ∞ SACRED GEOMETRY ∞  Organic Systems · Breathing Interfaces    ║
+# ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
+# ║  FILE: distribution/docker/profiles/hybrid.yml                                                    ║
+# ║  LAYER: root                                                  ║
+# ╚══════════════════════════════════════════════════════════════════╝
+# HEADY_BRAND:END
+# Hybrid — Local orchestrator + cloud models when needed
+# Usage: docker compose -f base.yml -f profiles/hybrid.yml up
+
+services:
+  heady-api:
+    environment:
+      - CLOUD_MODELS_ENABLED=true
+      - REQUIRE_INTERNET=true
+      - PREFER_LOCAL=true
+
+  model-runner:
+    environment:
+      - OLLAMA_MODELS=llama3.1:8b,nomic-embed-text
+
+  heady-orchestrator:
+    environment:
+      - PREFER_LOCAL_MODELS=true
+      - CLOUD_FALLBACK=true
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+
+  heady-rag:
+    environment:
+      - EMBEDDINGS_LOCAL=true
+      - CLOUD_EMBEDDINGS_FALLBACK=true
+
+  # Drupal 11 CMS
+  drupal:
+    build:
+      context: ../../drupal
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ../../drupal:/var/www/html
+      - ../../drupal/settings.php:/sites/default/settings.php
+      - drupal-data:/var/www/html/sites/default/files
+    environment:
+      - DRUPAL_DATABASE_DRIVER=pgsql
+      - DRUPAL_DATABASE_NAME=heady
+      - DRUPAL_DATABASE_USER=heady
+      - DRUPAL_DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+      - DRUPAL_DATABASE_HOST=postgres
+      - DRUPAL_DATABASE_PORT=5432
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - heady-net
+
+volumes:
+  drupal-data:
+    driver: local
