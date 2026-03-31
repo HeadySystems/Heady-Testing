@@ -18,7 +18,7 @@
 const PHI = 1.618033988749895;
 const PSI = 0.6180339887498949;
 
-const SENTRY_ORG = 'headyconnection-inc';
+const SENTRY_ORG = 'headysystems';
 const SENTRY_REGION = 'https://us.sentry.io';
 
 // ─── Project-to-Layer Mapping ─────────────────────────────────────────
