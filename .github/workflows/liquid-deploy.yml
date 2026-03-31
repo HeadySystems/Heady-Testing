@@ -40,8 +40,13 @@ jobs:
     name: Validate Liquid Node Contract
     runs-on: ubuntu-latest
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
+=======
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+>>>>>>> origin/dependabot/github_actions/actions/setup-node-6
         with:
           node-version: '20'
           cache: 'npm'
@@ -104,8 +109,13 @@ jobs:
     if: inputs.target == 'cloudflare' || inputs.target == 'all'
     runs-on: ubuntu-latest
     steps:
+<<<<<<< HEAD
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
+=======
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v6
+>>>>>>> origin/dependabot/github_actions/actions/setup-node-6
         with:
           node-version: '20'
       - name: Install Wrangler

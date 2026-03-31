@@ -156,7 +156,13 @@ let auditFixTasks = [];
 try {
   auditFixTasks = require('./audit-fix-tasks.json');
 } catch (e) { logger.error('Recovered from error:', e); }
-const TASK_CATALOG = [...extraTasks, ...nonprofitTasks, ...buddyTasks, ...long814Tasks, ...headyosTasks, ...orchProtocolTasks, ...phase5Tasks, ...downloadsTasks, ...auditFixTasks,
+// --- LINEAR & SENTRY TELEMETRY INTEGRATION ---
+const telemetryTasks = [
+  { id: "linear-001", name: "Process dynamic Linear issues explicitly mapped to active sprints", cat: "telemetry", pool: "hot", w: 5, desc: "Iterate through the HeadyMe Linear workspace and auto-assign / auto-resolve unassigned workflow tickets using MCP integration." },
+  { id: "sentry-001", name: "Process upstream Sentry error alerts & trigger self-healing", cat: "telemetry", pool: "hot", w: 5, desc: "Iterate through Sentry 404/500/timeout alerts, trigger 5-Whys analysis, and commit dynamic hotfixes via MCP." }
+];
+
+const TASK_CATALOG = [...telemetryTasks, ...extraTasks, ...nonprofitTasks, ...buddyTasks, ...long814Tasks, ...headyosTasks, ...orchProtocolTasks, ...phase5Tasks, ...downloadsTasks, ...auditFixTasks,
 // ═══ LEARNING (20) — Targeted system learning ═══════════════════════════
 {
   id: "learn-001",
@@ -1348,6 +1354,13 @@ class AutoSuccessEngine extends EventEmitter {
       ts: Date.now()
     });
 
+    // --- CONTINUOUS CYCLING INJECTION ---
+    // User priority directive: "ensure they are cycling and assigning background tasks appropriately"
+    // Forces the entire 135-task catalog to cycle dynamically in the background every 5 minutes.
+    this._pulseInterval = setInterval(() => {
+        this.react('scheduled:cycle', { reason: 'autonomous-background-pulse', ts: Date.now() });
+    }, 300000);
+
     // ═══ AUTO-COMMIT/PUSH/DEPLOY — Permanent pipeline automation ════════
     try {
       let autoCommitDeploy = null;
@@ -1364,6 +1377,7 @@ class AutoSuccessEngine extends EventEmitter {
   stop() {
     if (!this.running) return;
     this.running = false;
+    if (this._pulseInterval) clearInterval(this._pulseInterval);
     // Remove all event listeners
     if (this._eventBus) {
       for (const trigger of REACTION_TRIGGERS) {
@@ -1503,6 +1517,9 @@ class AutoSuccessEngine extends EventEmitter {
         finding = `Absorbed: ${err.message}`;
         absorbed = true;
         terminalState = TERMINAL_STATES.FAILED_CLOSED;
+
+        // --- MAX POTENTIAL ROOT CAUSE ANALYSIS ---
+        try { require('./max-potential-assessor').assess('negative'); } catch(e) {}
 
         // Record error to audit trail
         this._recordAudit('task_error_absorbed', task.id, {
